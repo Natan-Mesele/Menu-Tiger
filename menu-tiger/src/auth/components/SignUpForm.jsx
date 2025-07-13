@@ -106,6 +106,27 @@ const SignUpForm = () => {
             </label>
           </div>
 
+          <div className="flex items-center justify-between text-sm text-gray-600 border border-gray-300 rounded p-3 w-full max-w-xs mx-auto bg-[#F9F9F9]">
+            <label className="flex items-center cursor-pointer">
+              <input type="checkbox" className="w-6 h-6 mr-2 cursor-pointer" />
+              <span className="text-lg">I'm not a robot</span>
+            </label>
+            {/* Right side: image and terms */}
+            <div className="flex flex-col items-center">
+              <img
+                src="https://www.gstatic.com/recaptcha/api2/logo_48.png"
+                alt="reCAPTCHA"
+                className="h-7 w-7 mb-1"
+              />
+              <div className="text-[10px] text-gray-500 font-medium">
+                reCAPTCHA
+              </div>
+              <div className="text-[10px] text-gray-500 font-medium">
+                Privacy - Terms
+              </div>
+            </div>
+          </div>
+
           <Button type="submit">Get started</Button>
         </form>
 
