@@ -13,6 +13,8 @@ import {
   FaEdit,
   FaTrash,
 } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Reports() {
   const [activeTab, setActiveTab] = useState("scheduler");
@@ -20,6 +22,44 @@ function Reports() {
   const [schedulers, setSchedulers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingId, setEditingId] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [schedulerToDelete, setSchedulerToDelete] = useState(null);
+
+  const DeleteConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+        <h3 className="text-base font-semibold mb-2 dark:text-white">
+          Confirm Deletion
+        </h3>
+        <p className="text-sm mb-4 dark:text-gray-300 leading-relaxed">
+          Are you sure you want to delete this scheduler? This action cannot be
+          undone.
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={() => setShowDeletePopup(false)}
+            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              setSchedulers(
+                schedulers.filter(
+                  (scheduler) => scheduler.id !== schedulerToDelete
+                )
+              );
+              setShowDeletePopup(false);
+              toast.success("Scheduler deleted successfully");
+            }}
+            className="px-3 py-1.5 bg-red-600 text-sm text-white rounded-full hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   // Form state
   const [formData, setFormData] = useState({
@@ -36,7 +76,7 @@ function Reports() {
 
   const handleSave = () => {
     if (!formData.name || !formData.schedulingType || !formData.emails) {
-      alert("Please fill all required fields!");
+      toast.error("Please fill all required fields!");
       return;
     }
 
@@ -49,14 +89,16 @@ function Reports() {
             : scheduler
         )
       );
+      toast.success("Scheduler updated successfully");
       setEditingId(null);
     } else {
       // Add new scheduler
       const newScheduler = {
-        id: Date.now(), // unique ID
+        id: Date.now(),
         ...formData,
       };
       setSchedulers([...schedulers, newScheduler]);
+      toast.success("Scheduler created successfully");
     }
 
     setAddingNew(false);
@@ -185,8 +227,8 @@ function Reports() {
                       <FaPlus className="mr-2" />
                       Add New
                     </button>
-                    <button className="flex items-center border border-primary dark:border-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer">
-                      <FaDownload className="mr-2" />
+                    <button className="flex items-center border border-primary dark:border-gray-600 text-primary dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                      <FaDownload className="mr-2 text-primary" />
                       Download CSV
                     </button>
                   </div>
@@ -267,11 +309,14 @@ function Reports() {
                                   className="text-blue-500 hover:text-blue-700"
                                   onClick={() => handleEdit(scheduler.id)}
                                 >
-                                  <FaEdit />
+                                  <FaEdit className="text-primary" />
                                 </button>
                                 <button
                                   className="text-red-500 hover:text-red-700"
-                                  onClick={() => handleDelete(scheduler.id)}
+                                  onClick={() => {
+                                    setSchedulerToDelete(scheduler.id);
+                                    setShowDeletePopup(true);
+                                  }}
                                 >
                                   <FaTrash />
                                 </button>
@@ -398,7 +443,8 @@ function Reports() {
         {activeTab === "newsletters" && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <button className="bg-secondary cursor-pointer text-white px-4 py-3 rounded-sm text-sm hover:bg-primary">
+              <button className="flex items-center border border-primary dark:border-gray-600 text-primary dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                <FaDownload className="mr-2 text-primary" />
                 Download CSV
               </button>
               <input
@@ -455,7 +501,8 @@ function Reports() {
         {activeTab === "feedback" && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <button className="bg-secondary cursor-pointer text-white px-4 py-3 rounded-sm text-sm hover:bg-primary">
+              <button className="flex items-center border border-primary dark:border-gray-600 text-primary dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                <FaDownload className="mr-2 text-primary" />
                 Download CSV
               </button>
               <input
@@ -503,6 +550,25 @@ function Reports() {
           </div>
         )}
       </div>
+      {showDeletePopup && <DeleteConfirmationModal />}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{
+          background: "#0d9488",
+          color: "#f8fafc",
+          borderRadius: "8px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+        }}
+        className="custom-toast-container" // Add this
+      />
     </div>
   );
 }

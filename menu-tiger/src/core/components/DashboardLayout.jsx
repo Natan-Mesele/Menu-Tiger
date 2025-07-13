@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   FaMoon,
   FaSun,
@@ -41,11 +41,11 @@ const SidebarItem = ({
 }) => (
   <div
     onClick={onClick}
-    className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md ${
-      active ? "bg-gray-300 dark:bg-gray-700" : ""
-    } ${className || ""}`} // Added className here
+    className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-fifth hover:text-secondary dark:hover:bg-gray-700 rounded-md ${
+      active ? "bg-fifth text-secondary font-medium dark:bg-gray-700" : ""
+    } ${className || ""}`}
   >
-    <img src={icon} alt={label} className="w-5 h-5" />
+    <img src={icon} alt={label} className={`w-5 h-5 ${active ? "" : ""}`} />
     {!collapsed && <span>{label}</span>}
   </div>
 );
@@ -55,7 +55,9 @@ const Sidebar = ({
   setActivePage,
   sidebarCollapsed,
   isMobile,
-  setShowVideoPopup, // Add this to the props
+  setShowVideoPopup,
+  forceShowOnMobile,
+  setForceShowOnMobile,
 }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
 
@@ -63,13 +65,18 @@ const Sidebar = ({
     setOpenDropdown(openDropdown === name ? null : name);
   };
 
-  if (isMobile) return null;
+  // Hide on mobile unless forced to show
+  if (isMobile && !forceShowOnMobile) return null;
 
   return (
     <aside
       className={`transition-[width] duration-300 ${
-        sidebarCollapsed ? "w-20" : "w-64"
-      } bg-white dark:bg-gray-800 p-4 space-y-3 pt-6 h-full overflow-y-auto main-content-scroll`}
+        sidebarCollapsed && !isMobile ? "w-20" : "w-64"
+      } bg-white dark:bg-gray-800 p-4 space-y-3 pt-6 h-full overflow-y-auto main-content-scroll ${
+        isMobile
+          ? "fixed z-50 border-t border-gray-200 dark:border-gray-700"
+          : ""
+      }`}
     >
       <SidebarItem
         icon="https://www.app.menutigr.com/static/media/dashboard-selected.ea80f23ead1a505ffd35e3370bb3cfd8.svg"
@@ -97,7 +104,9 @@ const Sidebar = ({
       {/* Store Dropdown */}
       <div>
         <div
-          className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+          className={`flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-fifth dark:hover:bg-gray-700 rounded-md ${
+            openDropdown === "Store" ? "text-primary font-medium bg-fifth" : ""
+          }`}
           onClick={() => toggleDropdown("Store")}
         >
           <div className="flex items-center gap-3">
@@ -117,22 +126,27 @@ const Sidebar = ({
           )}
         </div>
         {!sidebarCollapsed && openDropdown === "Store" && (
-          <div className="ml-8 space-y-3">
+          <div className="ml-8 space-y-3 relative pl-1">
+            {/* Vertical line */}
+            <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-600"></div>
+
             <div
               onClick={() => setActivePage("Store")}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md ${
-                activePage === "Store" ? "bg-gray-300 dark:bg-gray-700" : ""
+              className={`flex items-center gap-3 px-3 py-3 cursor-pointer rounded-md hover:text-primary ${
+                activePage === "Store" ? "font-medium text-primary" : ""
               }`}
             >
-              <span> • Store</span>
+              <span>•</span>
+              <span>Store</span>
             </div>
             <div
               onClick={() => setActivePage("Taxation")}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md ${
-                activePage === "Taxation" ? "bg-gray-300 dark:bg-gray-700" : ""
+              className={`flex items-center gap-3 px-3 py-3 cursor-pointer rounded-md hover:text-primary ${
+                activePage === "Taxation" ? "font-medium text-primary" : ""
               }`}
             >
-              <span> • Taxation</span>
+              <span>•</span>
+              <span>Taxation</span>
             </div>
           </div>
         )}
@@ -141,7 +155,11 @@ const Sidebar = ({
       {/* Marketing Dropdown */}
       <div>
         <div
-          className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+          className={`flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-fifth dark:hover:bg-gray-700 rounded-md ${
+            openDropdown === "Marketing"
+              ? "text-primary font-medium bg-fifth"
+              : ""
+          }`}
           onClick={() => toggleDropdown("Marketing")}
         >
           <div className="flex items-center gap-3">
@@ -150,7 +168,16 @@ const Sidebar = ({
               alt="Marketing"
               className="w-5 h-5"
             />
-            {!sidebarCollapsed && <span>Marketing</span>}
+            {!sidebarCollapsed && (
+              <div className="flex flex-col leading-tight">
+                <span>Marketing</span>
+                <div className="flex justify-start mt-1">
+                  <span className="text-sm bg-[#FFE57F] px-2 py-0.5 rounded-full text-black font-normal inline-flex items-center">
+                    New
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
           {!sidebarCollapsed && (
             <FaChevronDown
@@ -161,38 +188,48 @@ const Sidebar = ({
           )}
         </div>
         {!sidebarCollapsed && openDropdown === "Marketing" && (
-          <div className="ml-8 space-y-3">
+          <div className="ml-8 space-y-3 relative pl-1">
+            {/* Vertical line */}
+            <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-600"></div>
+
             <div
               onClick={() => setActivePage("Website")}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md ${
-                activePage === "Website" ? "bg-gray-300 dark:bg-gray-700" : ""
+              className={`flex items-center gap-3 px-3 py-3 cursor-pointer rounded-md hover:text-primary ${
+                activePage === "Website" ? "font-medium text-primary" : ""
               }`}
             >
-              <span> • Website</span>
-            </div>
-            <div
-              onClick={() => setActivePage("Surveys")}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md ${
-                activePage === "Surveys" ? "bg-gray-300 dark:bg-gray-700" : ""
-              }`}
-            >
-              <span> • Surveys</span>
-            </div>
-            <div
-              onClick={() => setActivePage("Customer")}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md ${
-                activePage === "Customer" ? "bg-gray-300 dark:bg-gray-700" : ""
-              }`}
-            >
-              <span> • Customers</span>
+              <span>•</span>
+              <span>Website</span>
+              <span className="text-sm bg-[#FFE57F] px-2 py-0.5 rounded-full text-gray-600 font-normal inline-flex items-center">
+                New
+              </span>
             </div>
             <div
               onClick={() => setActivePage("Promotion")}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md ${
-                activePage === "Promotion" ? "bg-gray-300 dark:bg-gray-700" : ""
+              className={`flex items-center gap-3 px-3 py-3 cursor-pointer rounded-md hover:text-primary ${
+                activePage === "Promotion" ? "font-medium text-primary" : ""
               }`}
             >
-              <span> • Promotion</span>
+              <span>•</span>
+              <span>Promotion</span>
+            </div>
+            <div
+              onClick={() => setActivePage("Surveys")}
+              className={`flex items-center gap-3 px-3 py-3 cursor-pointer rounded-md hover:text-primary ${
+                activePage === "Surveys" ? "font-medium text-primary" : ""
+              }`}
+            >
+              <span>•</span>
+              <span>Surveys</span>
+            </div>
+            <div
+              onClick={() => setActivePage("Customer")}
+              className={`flex items-center gap-3 px-3 py-3 cursor-pointer rounded-md hover:text-primary ${
+                activePage === "Customer" ? "font-medium text-primary" : ""
+              }`}
+            >
+              <span>•</span>
+              <span>Customers</span>
             </div>
           </div>
         )}
@@ -332,6 +369,27 @@ const DashboardLayout = () => {
   ]);
   const [showProductTour, setShowProductTour] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [forceShowOnMobile, setForceShowOnMobile] = useState(false);
+  const sidebarRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isMobile &&
+        forceShowOnMobile &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
+        !event.target.closest("header") // Don't close if clicking header
+      ) {
+        setForceShowOnMobile(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobile, forceShowOnMobile]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -431,7 +489,16 @@ const DashboardLayout = () => {
             />
             <FaBars
               className="text-xl cursor-pointer"
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              onClick={() => {
+                if (isMobile) {
+                  // Toggle sidebar on mobile
+                  setForceShowOnMobile((prev) => !prev);
+                  setSidebarCollapsed(false);
+                } else {
+                  // Toggle collapsed state on desktop
+                  setSidebarCollapsed(!sidebarCollapsed);
+                }
+              }}
             />
           </div>
           <div className="flex items-center gap-4">
@@ -1091,7 +1158,9 @@ const DashboardLayout = () => {
             setActivePage={setActivePage}
             sidebarCollapsed={sidebarCollapsed}
             isMobile={isMobile}
-            setShowVideoPopup={setShowVideoPopup} // Add this line
+            setShowVideoPopup={setShowVideoPopup}
+            forceShowOnMobile={forceShowOnMobile}
+            setForceShowOnMobile={setForceShowOnMobile}
           />
           <main className="flex-1 overflow-auto main-content-scroll bg-gray-50 dark:bg-gray-900 h-full">
             {renderContent()}

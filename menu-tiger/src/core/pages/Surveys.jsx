@@ -705,14 +705,14 @@ function Surveys() {
                             className="text-gray-500 hover:text-primary"
                             title="Edit"
                           >
-                            <FaEdit />
+                            <FaEdit className="text-primary" />
                           </button>
                           <button
                             onClick={() => handleDelete(survey.id)}
                             className="text-gray-500 hover:text-red-500"
                             title="Delete"
                           >
-                            <FaTrash />
+                            <FaTrash className="text-red-500" />
                           </button>
                         </div>
                       </td>

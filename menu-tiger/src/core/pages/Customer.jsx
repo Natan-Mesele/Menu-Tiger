@@ -49,7 +49,7 @@ function Customers() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           {/* Left: Info with hover arrow */}
           <div className="flex items-center group">
-            <div className="flex items-center text-gray-700 dark:text-gray-300 text-sm border border-primary dark:border-gray-500 rounded-md px-3 py-2 group-hover:pr-2 transition-all duration-200">
+            <div className="flex items-center text-gray-700 dark:text-gray-300 text-sm border border-primary dark:border-gray-500 rounded-md px-3 py-3 group-hover:pr-2 transition-all duration-200">
               <FaQuestionCircle className="text-primary mr-2" />
               Manage your customers
               <FaChevronRight

@@ -15,6 +15,8 @@ import {
   FaBars,
   FaTimes,
 } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Website() {
   const [activeTab, setActiveTab] = useState("homepage");
@@ -78,6 +80,38 @@ function Website() {
     }
   };
 
+  const handleFocus = (fieldName) => {
+    setFocusedField(fieldName);
+  };
+
+  const handleSave = () => {
+    if (activeTab === "homepage") {
+      // Save homepage section data
+      const sectionData = {
+        [selectedSection]: promotionData,
+      };
+      console.log("Saving section data:", sectionData);
+      toast.success("Section settings saved successfully!");
+    } else if (activeTab === "colors") {
+      // Save color settings
+      const colorData = {
+        theme: selectedTheme,
+        primaryColor,
+        secondaryColor,
+      };
+      console.log("Saving color settings:", colorData);
+      toast.success("Color settings saved successfully!");
+    } else if (activeTab === "themes") {
+      // Save theme selection
+      const themeData = {
+        selectedTheme,
+        themeSettings: themes[selectedTheme],
+      };
+      console.log("Saving theme selection:", themeData);
+      toast.success("Theme saved successfully!");
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-200 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100">
       {/* Header */}
@@ -103,7 +137,7 @@ function Website() {
             className="w-6 h-6 cursor-pointer"
           />
           <button
-            className="bg-primary text-white px-5 py-2 rounded-md flex items-center hover:bg-teal-700 transition-colors duration-200 cursor-pointer"
+            className="bg-primary text-white px-5 py-2 rounded-md flex items-center hover:bg-teal-700 cursor-pointer"
             onClick={() => alert("Open App clicked!")}
           >
             <FaUtensils className="mr-2" />
@@ -173,7 +207,7 @@ function Website() {
                 ].map((section, index) => (
                   <div
                     key={index}
-                    className={`flex items-center justify-between gap-3 p-3 rounded-md border cursor-pointer transition-colors ${
+                    className={`flex items-center justify-between gap-3 p-3 rounded-md border cursor-pointer ${
                       selectedSection === `section-${index}`
                         ? "border-primary-200 bg-gray-100 dark:bg-gray-700"
                         : "border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -200,7 +234,10 @@ function Website() {
                       <h3 className="text-lg text-gray-500 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-sm px-3 py-3 font-semibold dark:border dark:border-gray-500">
                         Hero Section
                       </h3>
-                      <button className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90 transition">
+                      <button
+                        className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90"
+                        onClick={handleSave}
+                      >
                         Save
                       </button>
                     </div>
@@ -247,7 +284,7 @@ function Website() {
                                 focusedField === "stores"
                                   ? "border-primary"
                                   : "border-gray-300 dark:border-gray-600"
-                              } rounded-md transition-colors`}
+                              } rounded-md`}
                             >
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 whitespace-nowrap">
                                 Redirect to{" "}
@@ -270,7 +307,7 @@ function Website() {
                                 focusedField === "name"
                                   ? "border-primary"
                                   : "border-gray-300 dark:border-gray-600"
-                              } rounded-md transition-colors`}
+                              } rounded-md`}
                             >
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 whitespace-nowrap">
                                 Heading <span className="text-red-500">*</span>
@@ -292,7 +329,7 @@ function Website() {
                                 focusedField === "description"
                                   ? "border-primary"
                                   : "border-gray-300 dark:border-gray-600"
-                              } rounded-md transition-colors`}
+                              } rounded-md`}
                             >
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-b border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
                                 Description{" "}
@@ -331,7 +368,10 @@ function Website() {
                       <h3 className="text-lg text-gray-500 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-sm px-3 py-3 font-semibold dark:border dark:border-gray-500">
                         Hero Section
                       </h3>
-                      <button className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90 transition">
+                      <button
+                        className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90"
+                        onClick={handleSave}
+                      >
                         Save
                       </button>
                     </div>
@@ -380,7 +420,7 @@ function Website() {
                                   focusedField === "name"
                                     ? "border-primary"
                                     : "border-gray-300 dark:border-gray-600"
-                                } rounded-md transition-colors`}
+                                } rounded-md`}
                               >
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 whitespace-nowrap">
                                   Heading{" "}
@@ -403,7 +443,7 @@ function Website() {
                                   focusedField === "description"
                                     ? "border-primary"
                                     : "border-gray-300 dark:border-gray-600"
-                                } rounded-md transition-colors`}
+                                } rounded-md`}
                               >
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-b border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
                                   Description{" "}
@@ -442,7 +482,10 @@ function Website() {
                       <h3 className="text-lg text-gray-500 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-sm px-3 py-3 font-semibold dark:border dark:border-gray-500">
                         Hero Section
                       </h3>
-                      <button className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90 transition">
+                      <button
+                        className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90"
+                        onClick={handleSave}
+                      >
                         Save
                       </button>
                     </div>
@@ -480,7 +523,7 @@ function Website() {
                               focusedField === "name"
                                 ? "border-primary"
                                 : "border-gray-300 dark:border-gray-600"
-                            } rounded-md transition-colors`}
+                            } rounded-md`}
                           >
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 whitespace-nowrap">
                               Heading <span className="text-red-500">*</span>
@@ -502,7 +545,7 @@ function Website() {
                               focusedField === "description"
                                 ? "border-primary"
                                 : "border-gray-300 dark:border-gray-600"
-                            } rounded-md transition-colors`}
+                            } rounded-md`}
                           >
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-b border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
                               Description{" "}
@@ -539,7 +582,10 @@ function Website() {
                       <h3 className="text-lg text-gray-500 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-sm px-3 py-3 font-semibold dark:border dark:border-gray-500">
                         Hero Section
                       </h3>
-                      <button className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90 transition">
+                      <button
+                        className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90"
+                        onClick={handleSave}
+                      >
                         Save
                       </button>
                     </div>
@@ -589,7 +635,7 @@ function Website() {
                                   focusedField === "name"
                                     ? "border-primary"
                                     : "border-gray-300 dark:border-gray-600"
-                                } rounded-md transition-colors`}
+                                } rounded-md`}
                               >
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 whitespace-nowrap">
                                   Heading{" "}
@@ -612,7 +658,7 @@ function Website() {
                                   focusedField === "description"
                                     ? "border-primary"
                                     : "border-gray-300 dark:border-gray-600"
-                                } rounded-md transition-colors`}
+                                } rounded-md`}
                               >
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-b border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
                                   Description{" "}
@@ -651,7 +697,10 @@ function Website() {
                       <h3 className="text-lg text-gray-500 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-sm px-3 py-3 font-semibold dark:border dark:border-gray-500">
                         Hero Section
                       </h3>
-                      <button className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90 transition">
+                      <button
+                        className="bg-secondary hover:bg-primary cursor-pointer text-white px-4 py-3 rounded-sm font-medium hover:bg-opacity-90"
+                        onClick={handleSave}
+                      >
                         Save
                       </button>
                     </div>
@@ -689,7 +738,7 @@ function Website() {
                               focusedField === "name"
                                 ? "border-primary"
                                 : "border-gray-300 dark:border-gray-600"
-                            } rounded-md transition-colors`}
+                            } rounded-md`}
                           >
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 whitespace-nowrap">
                               Heading <span className="text-red-500">*</span>
@@ -711,7 +760,7 @@ function Website() {
                               focusedField === "description"
                                 ? "border-primary"
                                 : "border-gray-300 dark:border-gray-600"
-                            } rounded-md transition-colors`}
+                            } rounded-md`}
                           >
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-b border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
                               Description{" "}
@@ -753,8 +802,10 @@ function Website() {
               <div className="bg-gray-100 dark:bg-gray-700 px-4 py-3 rounded-md">
                 <span className="font-medium">Colors</span>
               </div>
-              <button className="bg-secondary cursor-pointer text-white px-4 py-3 rounded-md flex items-center hover:bg-primary transition-colors">
-                <FaCheck className="mr-2" />
+              <button
+                className="bg-secondary cursor-pointer text-white px-4 py-3 rounded-md flex items-center hover:bg-primary"
+                onClick={handleSave}
+              >
                 Save
               </button>
             </div>
@@ -803,26 +854,28 @@ function Website() {
                   </div>
                 </div>
 
-                <div className="space-y-4 flex flex-row gap-4">
-                  <div>
-                    <h3 className="font-medium mb-2">Primary</h3>
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
-                        style={{ backgroundColor: primaryColor }}
-                      ></div>
-                      <span className="font-mono">{primaryColor}</span>
+                <div className="space-y-4 p-6">
+                  <div className="flex flex-row items-start">
+                    <div className="flex-1">
+                      <h3 className="font-medium mb-2">Primary</h3>
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
+                          style={{ backgroundColor: primaryColor }}
+                        ></div>
+                        <span className="font-mono">{primaryColor}</span>
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <h3 className="font-medium mb-2">Secondary</h3>
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
-                        style={{ backgroundColor: secondaryColor }}
-                      ></div>
-                      <span className="font-mono">{secondaryColor}</span>
+                    <div className="flex-1">
+                      <h3 className="font-medium mb-2">Secondary</h3>
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
+                          style={{ backgroundColor: secondaryColor }}
+                        ></div>
+                        <span className="font-mono">{secondaryColor}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -883,8 +936,10 @@ function Website() {
               <div className="bg-gray-100 dark:bg-gray-700 px-4 py-3 rounded-md">
                 <span className="font-medium">Choose a theme</span>
               </div>
-              <button className="bg-secondary cursor-pointer text-white px-4 py-3 rounded-md flex items-center hover:bg-primary transition-colors">
-                <FaCheck className="mr-2" />
+              <button
+                className="bg-secondary cursor-pointer text-white px-4 py-3 rounded-md flex items-center hover:bg-primary"
+                onClick={handleSave}
+              >
                 Save
               </button>
             </div>
@@ -965,6 +1020,18 @@ function Website() {
           </div>
         )}
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </div>
   );
 }

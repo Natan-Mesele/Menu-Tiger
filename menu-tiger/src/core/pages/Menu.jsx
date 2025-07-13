@@ -24,6 +24,8 @@ import {
   FaTrash,
   FaEllipsisV,
 } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Menu = () => {
   const [activeTab, setActiveTab] = useState("Menus");
@@ -49,6 +51,11 @@ const Menu = () => {
   const [openModifierId, setOpenModifierId] = useState(null);
   const [currentSection, setCurrentSection] = useState("modifiers");
   const [modifierOptions, setModifierOptions] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteType, setDeleteType] = useState("");
+  const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
+  const [itemToDuplicate, setItemToDuplicate] = useState(null);
 
   const tabs = [
     { name: "Menus", icon: <FaListUl className="mr-2" /> },
@@ -101,6 +108,74 @@ const Menu = () => {
       date: "2025-06-19",
     },
   ]);
+
+  const DeleteConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+        <h3 className="text-base font-semibold mb-2 dark:text-white">
+          Confirm Deletion
+        </h3>
+        <p className="text-sm mb-4 dark:text-gray-300 leading-relaxed">
+          Are you sure you want to delete this {deleteType}? This action cannot
+          be undone.
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={() => setShowModal(false)}
+            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              if (deleteType === "menu") {
+                performDelete(itemToDelete);
+              } else if (deleteType === "modifier") {
+                performDeleteModifier(itemToDelete);
+              } else if (deleteType === "archive") {
+                performArchiveDelete(itemToDelete);
+              }
+              setShowModal(false);
+            }}
+            className="px-3 py-1.5 bg-red-600 text-sm text-white rounded-full hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const DuplicateConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+        <h3 className="text-base font-semibold mb-2 dark:text-white">
+          Duplicate menu?
+        </h3>
+        <p className="text-sm mb-4 dark:text-gray-300 leading-relaxed">
+          Are you sure you would like to make a duplicate copy of this menu?
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={() => setShowDuplicatePopup(false)}
+            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-sm text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              handleDuplicate(itemToDuplicate);
+              setShowDuplicatePopup(false);
+              toast.success("Menu duplicated successfully");
+            }}
+            className="px-3 py-1.5 bg-primary text-sm text-white rounded-sm hover:bg-teal-700"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   const handleAddNewClick = () => {
     setShowAddOptions(true);
@@ -200,13 +275,6 @@ const Menu = () => {
     }
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this menu?")) {
-      setMenus(menus.filter((menu) => menu.id !== id));
-      setOpenMenuId(null);
-    }
-  };
-
   const handleDuplicate = (id) => {
     const menuToDuplicate = menus.find((menu) => menu.id === id);
     if (menuToDuplicate) {
@@ -222,7 +290,10 @@ const Menu = () => {
   };
 
   const handleSaveMenu = () => {
-    if (!menuName) return;
+    if (!menuName) {
+      toast.error("Please enter a menu name");
+      return;
+    }
 
     if (editingMenuId) {
       setMenus(
@@ -232,6 +303,7 @@ const Menu = () => {
             : menu
         )
       );
+      toast.success("Menu updated successfully");
     } else {
       const newMenu = {
         id: Date.now(),
@@ -240,6 +312,7 @@ const Menu = () => {
         items: [],
       };
       setMenus([...menus, newMenu]);
+      toast.success("Menu created successfully");
     }
 
     setMenuName("");
@@ -261,15 +334,11 @@ const Menu = () => {
     }
   };
 
-  const handleDeleteModifier = (id) => {
-    if (window.confirm("Are you sure you want to delete this modifier?")) {
-      setModifiers(modifiers.filter((modifier) => modifier.id !== id));
-      setOpenModifierId(null);
-    }
-  };
-
   const handleSaveModifier = () => {
-    if (!modifierName) return;
+    if (!modifierName) {
+      toast.error("Please enter a modifier name");
+      return;
+    }
 
     if (editingModifierId) {
       setModifiers(
@@ -283,6 +352,7 @@ const Menu = () => {
             : modifier
         )
       );
+      toast.success("Modifier updated successfully");
     } else {
       const newModifier = {
         id: Date.now(),
@@ -290,6 +360,7 @@ const Menu = () => {
         description: modifierDescription,
       };
       setModifiers([...modifiers, newModifier]);
+      toast.success("Modifier created successfully");
     }
 
     setModifierName("");
@@ -322,51 +393,67 @@ const Menu = () => {
     setArchivedMenus(archivedMenus.filter((m) => m.id !== id));
   };
 
+  const handleDelete = (id) => {
+    setItemToDelete(id);
+    setDeleteType("menu");
+    setShowModal(true);
+  };
+
+  const handleDeleteModifier = (id) => {
+    setItemToDelete(id);
+    setDeleteType("modifier");
+    setShowModal(true);
+  };
+
   const handleArchiveDelete = (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to permanently delete this item?"
-    );
-    if (confirmed) {
-      const item = archivedMenus.find((m) => m.id === id);
-      console.log("Deleting from archive:", item);
-      setArchivedMenus(archivedMenus.filter((m) => m.id !== id));
-    }
+    setItemToDelete(id);
+    setDeleteType("archive");
+    setShowModal(true);
+  };
+
+  const performDelete = (id) => {
+    setMenus(menus.filter((menu) => menu.id !== id));
+  };
+
+  const performDeleteModifier = (id) => {
+    setModifiers(modifiers.filter((modifier) => modifier.id !== id));
+  };
+
+  const performArchiveDelete = (id) => {
+    setArchivedMenus(archivedMenus.filter((item) => item.id !== id));
   };
 
   const renderStepIndicator = () => (
-    <div className="flex justify-between items-center mb-8 relative">
-      <div className="absolute top-1/2 left-0 right-0 h-px bg-gray-300 dark:bg-gray-500 -z-10"></div>
-      {steps.map((step) => (
-        <div key={step.id} className="flex flex-row items-center gap-2">
-          <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center ${
-              currentStep >= step.id
-                ? "bg-primary text-white"
-                : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
-            }`}
-          >
-            {currentStep > step.id ? <FaCheck /> : step.id}
-          </div>
-          <div className="flex items-center">
+    <div className="flex items-center justify-between mb-8 w-full">
+      {steps.map((step, index) => (
+        <React.Fragment key={step.id}>
+          {/* Step Number + Label */}
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+                currentStep >= step.id
+                  ? "bg-primary text-white"
+                  : "bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
+              }`}
+            >
+              {step.id}
+            </div>
             <span
               className={`text-sm ${
                 currentStep >= step.id
-                  ? "text-gray-500 dark:text-gray-400 font-medium"
+                  ? "text-gray-700 dark:text-gray-300 font-medium"
                   : "text-gray-500 dark:text-gray-400"
               }`}
             >
-              {step.name
-                .replace("Template", "")
-                .replace("File", "")
-                .replace("Data", "")}
+              {step.name}
             </span>
-            {step.id < steps.length && (
-              <span className="mx-2 text-gray-400 dark:text-gray-500">
-                ------------------
-              </span>
-            )}
           </div>
-        </div>
+
+          {/* Line between steps (not after the last one) */}
+          {index < steps.length - 1 && (
+            <div className="flex-1 h-px bg-gray-300 dark:bg-gray-500 mx-4"></div>
+          )}
+        </React.Fragment>
       ))}
     </div>
   );
@@ -391,20 +478,17 @@ const Menu = () => {
             </p>
             <button
               onClick={downloadTemplate}
-              className="mt-4 bg-gray-200 dark:bg-gray-600 cursor-pointer text-gray-800 dark:text-gray-100 px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200"
+              className="mt-4 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200"
             >
               <FaCloudDownloadAlt className="text-secondary text-lg" />
               Download Template
             </button>
           </div>
         );
+
       case 2:
         return (
-          <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-600">
-            <div className="flex items-center mb-4">
-              <FaUpload className="text-blue-600 text-2xl mr-3" />
-              <h3 className="text-lg font-semibold">Upload Your Excel File</h3>
-            </div>
+          <div className="bg-white dark:bg-gray-700 p-6">
             <div className="space-y-4">
               {validationErrors.length > 0 && (
                 <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-200 dark:border-red-800">
@@ -466,6 +550,7 @@ const Menu = () => {
             </div>
           </div>
         );
+
       case 3:
         return (
           <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-600">
@@ -507,6 +592,7 @@ const Menu = () => {
             </div>
           </div>
         );
+
       case 4:
         return (
           <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-600 text-center">
@@ -529,6 +615,7 @@ const Menu = () => {
             </p>
           </div>
         );
+
       default:
         return null;
     }
@@ -545,9 +632,9 @@ const Menu = () => {
             }}
             className="flex items-center bg-secondary text-white px-4 py-4 rounded mr-2 cursor-pointer hover:bg-primary transition-colors"
           >
-            <FaChevronLeft className="text-sm" />
+            <FaChevronLeft />
           </div>
-          <div className="flex items-center bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-100 px-2 py-3 rounded-md">
+          <div className="flex items-center bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-100 px-3 py-3 rounded-md">
             <span>Menus</span>
             <span className="mx-1">/</span>
             <span className="text-primary">Add new menu</span>
@@ -557,7 +644,7 @@ const Menu = () => {
         <button
           onClick={handleSaveMenu}
           disabled={!menuName}
-          className={`px-4 py-3 text-sm rounded-md cursor-pointer text-white ${
+          className={`px-4 py-3 text-md rounded-md text-white ${
             !menuName
               ? "bg-secondary cursor-not-allowed"
               : "bg-secondary hover:bg-primary"
@@ -572,7 +659,7 @@ const Menu = () => {
           <label className="w-28 text-sm font-medium text-gray-600 dark:text-gray-300 px-3 py-2">
             Name <span className="text-red-500">*</span>
           </label>
-          <div className="border-l border-gray-300 dark:border-gray-600 flex-1 px-3 py-2 focus-within:border-primary transition-colors">
+          <div className="border-l border-gray-300 dark:border-gray-600 flex-1 px-3 py-2">
             <input
               type="text"
               value={menuName}
@@ -586,7 +673,7 @@ const Menu = () => {
           <label className="w-28 pt-2 text-sm font-medium text-gray-600 dark:text-gray-300 px-3 py-2">
             Description
           </label>
-          <div className="border-l border-gray-300 dark:border-gray-600 flex-1 px-3 py-2 focus-within:border-primary transition-colors">
+          <div className="border-l border-gray-300 dark:border-gray-600 flex-1 px-3 py-2">
             <textarea
               value={menuDescription}
               onChange={(e) => setMenuDescription(e.target.value)}
@@ -662,7 +749,7 @@ const Menu = () => {
             <>
               {showMainContent && (
                 <div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 gap-4">
                     <button
                       onClick={handleAddNewClick}
                       className="flex items-center bg-secondary text-white px-4 py-3 rounded-md text-sm hover:bg-primary cursor-pointer transition-colors duration-200"
@@ -671,13 +758,9 @@ const Menu = () => {
                       Add New
                     </button>
 
-                    <div className="flex items-center border border-dashed border-gray-400 px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 text-sm">
+                    <div className="flex items-center border border-primary px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 text-sm">
                       <FaQuestionCircle className="mr-2 text-primary text-sm" />
-                      Go to{" "}
-                      <span className="mx-1 font-semibold underline cursor-pointer">
-                        Store settings
-                      </span>{" "}
-                      to connect your favorite menu
+                      Go to Store setting to connect your favorite menu
                     </div>
                   </div>
 
@@ -725,7 +808,10 @@ const Menu = () => {
                                   Delete
                                 </button>
                                 <button
-                                  onClick={() => handleDuplicate(menu.id)}
+                                  onClick={() => {
+                                    setItemToDuplicate(menu.id);
+                                    setShowDuplicatePopup(true);
+                                  }}
                                   className="flex items-center w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                   <svg
@@ -1101,49 +1187,12 @@ const Menu = () => {
                   {/* Localize Section */}
                   {currentSection === "localize" && (
                     <div className="space-y-6 max-w-sm">
-                      <div className="p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-800">
-                        <div className="flex items-center justify-between mb-2">
+                      <div className="p-4">
+                        <div className="flex items-center gap-4 mb-2">
                           <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
                             Text localization
                           </span>
-                          <FaQuestionCircle className="text-gray-400 dark:text-gray-500" />
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Add translations for your modifier in different
-                          languages
-                        </p>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600 dark:text-gray-300">
-                            English
-                          </span>
-                          <input
-                            type="text"
-                            className="flex-1 ml-4 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
-                            placeholder="Enter English translation"
-                          />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600 dark:text-gray-300">
-                            Spanish
-                          </span>
-                          <input
-                            type="text"
-                            className="flex-1 ml-4 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
-                            placeholder="Enter Spanish translation"
-                          />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600 dark:text-gray-300">
-                            French
-                          </span>
-                          <input
-                            type="text"
-                            className="flex-1 ml-4 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
-                            placeholder="Enter French translation"
-                          />
+                          <FaQuestionCircle className="text-primary dark:text-gray-500" />
                         </div>
                       </div>
                     </div>
@@ -1280,7 +1329,7 @@ const Menu = () => {
                             title="Restore"
                             onClick={() => handleRestore(item.id)}
                           >
-                            <FaHistory />
+                            <FaHistory className="text-primary" />
                           </button>
                           <button
                             className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 cursor-pointer"
@@ -1324,6 +1373,26 @@ const Menu = () => {
           )}
         </div>
       </div>
+      {showModal && <DeleteConfirmationModal />}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{
+          background: "#0d9488",
+          color: "#f8fafc",
+          borderRadius: "8px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+        }}
+        className="custom-toast-container" // Add this
+      />
+      {showDuplicatePopup && <DuplicateConfirmationModal />}
     </div>
   );
 };

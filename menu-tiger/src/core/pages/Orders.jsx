@@ -8,6 +8,7 @@ import {
   FaStore,
   FaMoneyBillWave,
   FaCar,
+  FaMicrophone,
 } from "react-icons/fa";
 
 const tableData = [
@@ -89,27 +90,45 @@ function Orders() {
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-4 w-full">
           {/* Invoice input */}
           <div className="relative w-full">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none" />
+            {/* Rectangle Image Icon */}
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+              <div className="w-6 h-6 flex items-center justify-center rounded-sm">
+                <img
+                  src="https://www.app.menutigr.com/static/media/store.e0808a2a2a59e39e07e4c4eb3c95ad92.svg"
+                  alt="Store Icon"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              {/* Divider Line */}
+              <div className="w-[1px] h-8 bg-gray-300 dark:bg-gray-500 ml-2"></div>
+            </div>
+
+            {/* Input Field */}
             <input
               type="text"
               placeholder="Invoice ID"
-              className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md w-full bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-0 focus:border-primary"
+              className="pl-14 pr-4 py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-md w-full bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-0 focus:border-primary"
             />
           </div>
 
           {/* Store dropdown */}
           <div className="relative w-full" ref={storeRef}>
             <div
-              className="flex items-center w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer"
+              className={`flex items-center w-full px-10 py-3 rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer ${
+                storeOpen
+                  ? "border border-primary dark:border-primary"
+                  : "border border-gray-300 dark:border-gray-600"
+              }`}
               onClick={() => setStoreOpen(!storeOpen)}
             >
-              <FaStore className="absolute left-3 text-gray-400 dark:text-gray-500" />
-              <span className="ml-2">Store</span>
+              <FaStore className="absolute left-3 text-primary dark:text-gray-500 text-2xl" />
+              <span className="ml-2">All</span>
               <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-500" />
             </div>
+
             {storeOpen && (
               <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg">
-                {["All", "Store 1", "Store 2", "Store 3"].map((item) => (
+                {["All", "Tiger"].map((item) => (
                   <div
                     key={item}
                     className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
@@ -124,13 +143,20 @@ function Orders() {
           {/* Payment dropdown */}
           <div className="relative w-full" ref={paymentRef}>
             <div
-              className="flex items-center w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer"
+              className={`flex items-center w-full px-10 py-3 rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer ${
+                paymentOpen
+                  ? "border border-primary dark:border-primary"
+                  : "border border-gray-300 dark:border-gray-600"
+              }`}
               onClick={() => setPaymentOpen(!paymentOpen)}
             >
-              <FaMoneyBillWave className="absolute left-3 text-gray-400 dark:text-gray-500" />
-              <span className="ml-2">Payment</span>
+              <span className="absolute left-3 text-white bg-primary dark:bg-primary rounded-full w-7 h-7 flex items-center justify-center text-xl font-semibold">
+                $
+              </span>
+              <span className="ml-2">All</span>
               <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-500" />
             </div>
+
             {paymentOpen && (
               <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg">
                 {["All", "Paid", "Unpaid", "Partial"].map((item) => (
@@ -148,16 +174,27 @@ function Orders() {
           {/* Status dropdown */}
           <div className="relative w-full" ref={statusRef}>
             <div
-              className="flex items-center w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer"
+              className={`flex items-center w-full px-10 py-3 border rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer
+      ${
+        statusOpen
+          ? "border-primary dark:border-primary"
+          : "border-gray-300 dark:border-gray-600"
+      }`}
               onClick={() => setStatusOpen(!statusOpen)}
             >
-              <FaCar className="absolute left-3 text-gray-400 dark:text-gray-500" />
+              <FaCar className="absolute left-3 text-primary dark:text-primary text-2xl" />
               <span className="ml-2">Status</span>
               <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-500" />
             </div>
             {statusOpen && (
               <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg">
-                {["All", "Pending", "Completed", "Cancelled"].map((item) => (
+                {[
+                  "All",
+                  "Pending",
+                  "In-Progress",
+                  "Completed",
+                  "Cancelled",
+                ].map((item) => (
                   <div
                     key={item}
                     className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
@@ -170,13 +207,13 @@ function Orders() {
           </div>
 
           {/* Apply button */}
-          <button className="w-full bg-primary text-white px-4 py-2 rounded-md text-sm hover:bg-teal-700 transition-colors duration-200 cursor-pointer">
-            Apply
+          <button className="w-full font-bold bg-primary text-gray-100 px-4 py-2 rounded-md text-sm hover:bg-teal-700 transition-colors duration-200 cursor-pointer">
+            Apply Filter
           </button>
 
           {/* Reset button */}
-          <button className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
-            Reset
+          <button className="w-full font-bold border border-primary dark:border-gray-600 text-primary dark:text-gray-300 px-4 py-2 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
+            Reset Filter
           </button>
         </div>
 

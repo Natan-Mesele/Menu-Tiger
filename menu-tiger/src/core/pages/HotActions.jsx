@@ -16,6 +16,8 @@ import {
   FaMoneyBillWave,
   FaFilter,
 } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function HotActions() {
   const [activeTab, setActiveTab] = useState("create");
@@ -36,6 +38,8 @@ function HotActions() {
   const containerRef = useRef(null);
   const targetRef = editingAction ? null : addNewRef;
   const [popupStyle, setPopupStyle] = useState({});
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [actionToDelete, setActionToDelete] = useState(null);
 
   const actionImages = [
     {
@@ -130,6 +134,7 @@ function HotActions() {
       )
     );
     setEditingAction(null);
+    toast.success("Action updated successfully");
   };
 
   // Cancel editing
@@ -155,6 +160,40 @@ function HotActions() {
       });
     }
   }, [showWifiPopup]);
+
+  const DeleteConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+        <h3 className="text-base font-semibold mb-2 dark:text-white">
+          Confirm Deletion
+        </h3>
+        <p className="text-sm mb-4 dark:text-gray-300 leading-relaxed">
+          Are you sure you want to delete this action? This action cannot be
+          undone.
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={() => setShowDeletePopup(false)}
+            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              setCallActions(
+                callActions.filter((action) => action.id !== actionToDelete)
+              );
+              setShowDeletePopup(false);
+              toast.success("Action deleted successfully");
+            }}
+            className="px-3 py-1.5 bg-red-600 text-sm text-white rounded-full hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="p-6 bg-gray-200 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100">
@@ -455,7 +494,10 @@ function HotActions() {
                       {/* Delete Icon */}
                       <button
                         title="Delete"
-                        onClick={() => handleDelete(action.id)}
+                        onClick={() => {
+                          setActionToDelete(action.id);
+                          setShowDeletePopup(true);
+                        }}
                         className="hover:opacity-80 transition-opacity cursor-pointer"
                       >
                         <img
@@ -492,7 +534,7 @@ function HotActions() {
                 </div>
               </div>
               <button
-                className="bg-primary cursor-pointer text-white px-4 py-2 rounded-md hover:bg-teal-700 transition cursor-pointer"
+                className="bg-primary text-white px-4 py-2 rounded-md hover:bg-teal-700 transition cursor-pointer"
                 onClick={handleSaveEdit}
               >
                 Save
@@ -642,8 +684,8 @@ function HotActions() {
               <button
                 className={`w-full px-4 py-3 border rounded-md text-sm transition-colors duration-200 cursor-pointer ${
                   selectedRange === "Today"
-                    ? "bg-primary text-white border-primary"
-                    : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    ? "bg-primary text-white border-primary font-medium"
+                    : "border-primary dark:border-gray-600 bg-white dark:bg-gray-800 text-primary font-medium dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
                 onClick={() => setSelectedRange("Today")}
               >
@@ -653,8 +695,8 @@ function HotActions() {
               <button
                 className={`w-full px-4 py-3 border rounded-md text-sm transition-colors duration-200 cursor-pointer ${
                   selectedRange === "Week"
-                    ? "bg-primary text-white border-primary"
-                    : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    ? "bg-primary text-white border-primary font-medium"
+                    : "border-primary dark:border-gray-600 bg-white dark:bg-gray-800 text-primary font-medium dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
                 onClick={() => setSelectedRange("Week")}
               >
@@ -664,8 +706,8 @@ function HotActions() {
               <button
                 className={`w-full px-4 py-3 border rounded-md text-sm transition-colors duration-200 cursor-pointer ${
                   selectedRange === "Month"
-                    ? "bg-primary text-white border-primary"
-                    : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    ? "bg-primary text-white font-medium border-primary"
+                    : "border-primary dark:border-gray-600 bg-white dark:bg-gray-800 text-primary font-medium dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
                 onClick={() => setSelectedRange("Month")}
               >
@@ -678,26 +720,29 @@ function HotActions() {
                   className="flex items-center w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer text-left"
                   onClick={() => setFirstDropdownOpen(!firstDropdownOpen)}
                 >
-                  <FaCar className="absolute left-3 text-gray-400 dark:text-gray-500" />
+                  <img
+                    src="https://www.app.menutigr.com/static/media/store.e0808a2a2a59e39e07e4c4eb3c95ad92.svg"
+                    alt="Store Icon"
+                    className="absolute left-3 w-5 h-5"
+                  />
                   <span className="ml-2 truncate">{selectedStatus}</span>
                   <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-500" />
                 </button>
+
                 {firstDropdownOpen && (
                   <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
-                    {["All", "Pending", "Completed", "Cancelled"].map(
-                      (item) => (
-                        <button
-                          key={item}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                          onClick={() => {
-                            setSelectedStatus(item);
-                            setFirstDropdownOpen(false);
-                          }}
-                        >
-                          {item}
-                        </button>
-                      )
-                    )}
+                    {["All", "Tiger"].map((item) => (
+                      <button
+                        key={item}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                        onClick={() => {
+                          setSelectedStatus(item);
+                          setFirstDropdownOpen(false);
+                        }}
+                      >
+                        {item}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
@@ -708,13 +753,13 @@ function HotActions() {
                   className="flex items-center w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer text-left"
                   onClick={() => setSecondDropdownOpen(!secondDropdownOpen)}
                 >
-                  <FaMoneyBillWave className="absolute left-3 text-gray-400 dark:text-gray-500" />
+                  <FaCar className="absolute left-3 text-primary text-2xl dark:text-gray-500" />
                   <span className="ml-2 truncate">{selectedPayment}</span>
                   <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-500" />
                 </button>
                 {secondDropdownOpen && (
                   <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto">
-                    {["All", "Paid", "Unpaid", "Partial"].map((item) => (
+                    {["All", "Active", "Approved"].map((item) => (
                       <button
                         key={item}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
@@ -731,8 +776,8 @@ function HotActions() {
               </div>
 
               {/* Last button */}
-              <button className="w-full bg-primary text-white px-4 py-3 rounded-md text-sm hover:bg-teal-700 transition-colors duration-200 cursor-pointer">
-                Apply
+              <button className="w-full bg-gray-300 text-gray-500 font-medium px-4 py-3 rounded-md text-sm cursor-pointer">
+                Apply Filter
               </button>
             </div>
             {/* Table */}
@@ -781,6 +826,25 @@ function HotActions() {
           </div>
         )}
       </div>
+      {showDeletePopup && <DeleteConfirmationModal />}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{
+          background: "#0d9488",
+          color: "#f8fafc",
+          borderRadius: "8px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+        }}
+        className="custom-toast-container" // Add this
+      />
     </div>
   );
 }

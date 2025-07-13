@@ -64,3 +64,48 @@
 .dark .main-content-scroll::-webkit-scrollbar-thumb:hover {
   background: #6b7280; /* Gray-500 */
 }
+
+/* Close button */
+.custom-toast-container button[aria-label="close"] {
+  color: #e2e8f0 !important; /* light gray */
+  opacity: 0.8;
+}
+
+.custom-toast-container button[aria-label="close"]:hover {
+  color: white !important;
+  opacity: 1;
+}
+
+/* Progress bar */
+.custom-toast-container .Toastify__progress-bar {
+  background: #ccfbf1 !important; /* teal-100 */
+}
+
+/* Success icon color */
+.Toastify__toast--success .Toastify__toast-icon svg {
+  fill: #ffffff !important; /* pure white */
+}
+
+/* Error icon color */
+.Toastify__toast--error .Toastify__toast-icon svg {
+  fill: #ffffff !important;
+}
+
+/* Info icon color */
+.Toastify__toast--info .Toastify__toast-icon svg {
+  fill: #ffffff !important;
+}
+
+/* Warning icon color */
+.Toastify__toast--warning .Toastify__toast-icon svg {
+  fill: #ffffff !important;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}

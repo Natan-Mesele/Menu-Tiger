@@ -102,7 +102,8 @@ const Dashboard = () => {
             <FaRocket className="text-primary dark:text-teal-400 text-lg sm:text-xl" />
           </div>
           <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mt-1">
-            Hi Cinematic Highlights, Welcome to Menu Tiger
+            <strong className="font-semibold">Hi Cinematic Highlights,</strong>{" "}
+            <span className="font-light">welcome to Menu Tiger Dashboard!</span>
           </span>
         </div>
         <div className="flex items-center space-x-4 cursor-pointer border border-gray-300 dark:border-gray-600 rounded-md p-2">
@@ -202,16 +203,14 @@ const Dashboard = () => {
             {allDropdownOpen && (
               <div className="absolute top-full cursor-pointer right-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
                 <div className="py-1">
-                  {["All Locations", "All Time", "All Categories"].map(
-                    (item) => (
-                      <div
-                        key={item}
-                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        {item}
-                      </div>
-                    )
-                  )}
+                  {["All", "Menu Tiger"].map((item) => (
+                    <div
+                      key={item}
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      {item}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

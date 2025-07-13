@@ -21,6 +21,8 @@ import {
   FaPlus,
   FaMapMarkerAlt,
 } from "react-icons/fa";
+import { MapContainer, TileLayer, Circle, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 function Stores() {
   const [currentPage, setCurrentPage] = useState("tables");
@@ -129,6 +131,39 @@ function Stores() {
   const menuRef = useRef(null);
   const [showEditPage, setShowEditPage] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteType, setDeleteType] = useState("");
+
+  const RadiusCircle = ({ center, radius }) => {
+    const map = useMap();
+
+    useEffect(() => {
+      map.flyTo(center, getZoomLevel(radius));
+    }, [center, radius, map]);
+
+    return (
+      <Circle
+        center={center}
+        radius={radius}
+        pathOptions={{
+          color: "#0d9488",
+          fillColor: "#0d9488",
+          fillOpacity: 0.2,
+        }}
+      />
+    );
+  };
+
+  // Helper function to calculate zoom level based on radius
+  const getZoomLevel = (radius) => {
+    // Adjust these values based on your needs
+    if (radius < 50) return 18;
+    if (radius < 100) return 17;
+    if (radius < 500) return 15;
+    if (radius < 1000) return 13;
+    return 11;
+  };
 
   const handleClickOutside = (event) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -144,16 +179,20 @@ function Stores() {
   }, []);
 
   const handleMenuEdit = (id) => {
+    console.log("Edit clicked for ID:", id); // Debug log
     const itemToEdit = savedSchedulers.find((item) => item.id === id);
     if (itemToEdit) {
-      setEditingItem(itemToEdit);
-      setShowEditPage(true);
+      setFormData({
+        name: itemToEdit.name,
+        id: itemToEdit.id,
+      });
+      setShowTableForm(true);
     }
   };
 
-  const handleMenuDelete = () => {
-    setIsOpen(false);
-    if (onDeleteClick) onDeleteClick();
+  const handleMenuDelete = (id) => {
+    console.log("Delete clicked for ID:", id); // Debug log
+    setSavedSchedulers(savedSchedulers.filter((item) => item.id !== id));
   };
 
   const handleSaveEdit = () => {
@@ -302,9 +341,7 @@ function Stores() {
   };
 
   const handleDeleteUser = (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      setUsers(users.filter((user) => user.id !== id));
-    }
+    setUsers(users.filter((user) => user.id !== id));
   };
 
   const EditPage = () => (
@@ -680,24 +717,39 @@ function Stores() {
               onClick={() => setIsOpen(!isOpen)}
               className="flex items-center justify-between cursor-pointer w-full text-gray-500 dark:text-gray-300 hover:text-primary border border-gray-300 rounded-md px-4 py-3"
             >
-              <span className="text-sm">More</span>
+              <span className="text-sm">Tiger</span>
               <FaEllipsisV className="text-lg" />
             </button>
 
             {isOpen && (
               <div className="absolute left-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-500">
                 <button
-                  onClick={handleMenuEdit}
+                  onClick={() => {
+                    const itemToEdit = savedSchedulers[0]; // Assuming you want to edit the first item
+                    if (itemToEdit) {
+                      setEditingItem(itemToEdit);
+                      setShowEditPage(true);
+                    }
+                    setIsOpen(false);
+                  }}
                   className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
                 >
-                  <FaEdit className="mr-2" />
+                  <FaEdit className="mr-2 text-primary" />
                   Edit
                 </button>
                 <button
-                  onClick={handleMenuDelete}
-                  className="flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+                  onClick={() => {
+                    const itemToEdit = savedSchedulers[0];
+                    if (itemToEdit) {
+                      setItemToDelete(itemToEdit.id);
+                      setDeleteType("scheduler");
+                      setShowDeletePopup(true);
+                    }
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                  <FaTrash className="mr-2" />
+                  <FaTrash className="mr-2 text-red-500" />
                   Delete
                 </button>
               </div>
@@ -708,7 +760,7 @@ function Stores() {
         {/* Tabs and Content */}
         <div className="flex-1">
           {/* Tabs */}
-          <div className="relative border-b border-gray-200 dark:border-gray-700">
+          <div className="relative border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
             <div className="flex items-center">
               {/* Left Arrow */}
               <button
@@ -747,7 +799,7 @@ function Stores() {
                       ref={tab.id === "wifi" ? wifiTabRef : undefined}
                       className={`px-6 py-4 font-medium text-sm flex-shrink-0 flex items-center ${
                         tab.id === "wifi"
-                          ? "text-gray-400 dark:text-gray-500 opacity-50 hover:bg-transparent"
+                          ? "text-gray-500 dark:text-gray-500 opacity-50 hover:bg-transparent"
                           : currentPage === tab.id
                           ? "text-primary border-b-2 border-primary"
                           : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -777,12 +829,11 @@ function Stores() {
                         }
                       }}
                     >
-                      <span className="mr-2">{tab.icon}</span>
+                      <span className="mr-2 text-lg">{tab.icon}</span>
                       <span>{tab.name}</span>
                     </button>
                   ))}
               </div>
-
               {/* Right Arrow */}
               <button
                 className="px-2 py-3 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary disabled:opacity-30"
@@ -1012,7 +1063,11 @@ function Stores() {
                               </button>
                               <button
                                 className="text-gray-500 hover:text-red-500"
-                                onClick={() => handleDelete(item.id)}
+                                onClick={() => {
+                                  setItemToDelete(item.id);
+                                  setDeleteType("scheduler");
+                                  setShowDeletePopup(true);
+                                }}
                               >
                                 <img
                                   src="https://www.app.menutigr.com/static/media/delete.f9fb3a4cc8c70107a50718ec2199a285.svg"
@@ -1068,7 +1123,7 @@ function Stores() {
                     {/* User Form with parallel labels and inputs */}
                     <div className="space-y-4 max-w-lg">
                       {/* First Name */}
-                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
+                      <div className="flex items-center focus-within:border-primary dark:focus-within:border-primary border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
                         <label className="w-1/4 px-4 py-3 text-sm font-medium bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-r border-gray-300 dark:border-gray-600">
                           First Name <span className="text-red-500">*</span>
                         </label>
@@ -1084,7 +1139,7 @@ function Stores() {
                       </div>
 
                       {/* Last Name */}
-                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
+                      <div className="flex items-center focus-within:border-primary dark:focus-within:border-primary border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
                         <label className="w-1/4 px-4 py-3 text-sm font-medium bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-r border-gray-300 dark:border-gray-600">
                           Last Name <span className="text-red-500">*</span>
                         </label>
@@ -1100,7 +1155,7 @@ function Stores() {
                       </div>
 
                       {/* Email */}
-                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
+                      <div className="flex items-center focus-within:border-primary dark:focus-within:border-primary border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
                         <label className="w-1/4 px-4 py-3 text-sm font-medium bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-r border-gray-300 dark:border-gray-600">
                           Email <span className="text-red-500">*</span>
                         </label>
@@ -1116,7 +1171,7 @@ function Stores() {
                       </div>
 
                       {/* Password */}
-                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
+                      <div className="flex items-center focus-within:border-primary dark:focus-within:border-primary border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
                         <label className="w-1/4 px-4 py-3 text-sm font-medium bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-r border-gray-300 dark:border-gray-600">
                           Password <span className="text-red-500">*</span>
                         </label>
@@ -1141,7 +1196,7 @@ function Stores() {
                       </div>
 
                       {/* Confirm Password */}
-                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
+                      <div className="flex items-center focus-within:border-primary dark:focus-within:border-primary border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
                         <label className="w-1/4 px-4 py-3 text-sm font-medium bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-r border-gray-300 dark:border-gray-600">
                           Confirm Password{" "}
                           <span className="text-red-500">*</span>
@@ -1170,7 +1225,7 @@ function Stores() {
 
                       {/* Access Level */}
                       <div className="flex flex-col">
-                        <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
+                        <div className="flex items-center focus-within:border-primary dark:focus-within:border-primary border border-gray-300 dark:border-gray-600 rounded-sm overflow-hidden">
                           <label className="w-1/4 px-4 py-3 text-sm font-medium bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-r border-gray-300 dark:border-gray-600">
                             Access Level <span className="text-red-500">*</span>
                           </label>
@@ -1291,10 +1346,14 @@ function Stores() {
                                       onClick={() => handleEditUser(user.id)}
                                       className="text-blue-600 hover:text-blue-900"
                                     >
-                                      <FaEdit />
+                                      <FaEdit className="text-primary" />
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteUser(user.id)}
+                                      onClick={() => {
+                                        setItemToDelete(user.id);
+                                        setDeleteType("user");
+                                        setShowDeletePopup(true);
+                                      }}
                                       className="text-red-600 hover:text-red-900"
                                     >
                                       <FaTrash />
@@ -1535,7 +1594,7 @@ function Stores() {
                     </div>
                   </div>
                   <button
-                    className="bg-secondary cursor-pointer text-white px-4 py-3 rounded-md hover:bg-teal-700 transition cursor-pointer w-full md:w-auto border border-primary"
+                    className="bg-secondary text-white px-4 py-3 rounded-md hover:bg-teal-700 transition cursor-pointer w-full md:w-auto border border-primary"
                     onClick={() => {
                       // Add your save logic here
                       console.log("Saving location data:", {
@@ -1601,18 +1660,19 @@ function Stores() {
                         </div>
 
                         {/* Radius - now connected to state */}
-                        <div className="border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
-                          <div className="flex items-center">
-                            <span className="text-sm text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
-                              Radius *
-                            </span>
-                            <input
-                              type="number"
-                              className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 outline-none"
-                              value={radiusValue}
-                              onChange={(e) => setRadiusValue(e.target.value)}
-                            />
-                          </div>
+                        <div className="flex items-center focus-within:border-primary dark:focus-within:border-primary border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
+                          <label className="w-2/4 px-6 py-2.5 text-sm font-semibold bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-r border-gray-300 dark:border-gray-600 flex items-center gap-2">
+                            Radius <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="number"
+                            name="radius"
+                            value={radiusValue}
+                            onChange={(e) => setRadiusValue(e.target.value)}
+                            className="flex-1 px-4 py-2.5 bg-white dark:bg-gray-800 focus:outline-none"
+                            placeholder="Enter radius"
+                            required
+                          />
                         </div>
                         <div className="flex items-center gap-2 px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-md text-md text-gray-700 dark:text-gray-300">
                           <FaQuestionCircle className="text-primary" />
@@ -1629,20 +1689,23 @@ function Stores() {
                           Use the interactive map to set your location
                         </span>
                       </div>
-                      <div className="h-64 bg-gray-100 dark:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600 flex items-center justify-center relative">
-                        {/* Simple visualization of radius - would be replaced with actual map in production */}
-                        <div
-                          className="absolute border-2 border-primary rounded-full bg-primary/10"
-                          style={{
-                            width: `${Math.min(radiusValue * 2, 300)}px`,
-                            height: `${Math.min(radiusValue * 2, 300)}px`,
-                            transition: "all 0.3s ease",
-                          }}
-                        ></div>
-                        <span className="text-gray-500 dark:text-gray-400 z-10">
-                          Map with {radiusValue}m radius
-                        </span>
-                      </div>
+
+                      {/* Replace this block with MapContainer */}
+                      <MapContainer
+                        center={[7.0329, 38.4955]}
+                        zoom={getZoomLevel(radiusValue)}
+                        scrollWheelZoom={false}
+                        className="h-64 w-full rounded-md border border-gray-300 dark:border-gray-600"
+                      >
+                        <TileLayer
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                        />
+                        <RadiusCircle
+                          center={[7.0329, 38.4955]}
+                          radius={radiusValue}
+                        />
+                      </MapContainer>
                     </div>
                   </div>
                 )}
@@ -1878,6 +1941,41 @@ function Stores() {
                 className="w-full bg-secondary dark:bg-gray-700 text-white shadow-md dark:text-white px-5 py-2 rounded-sm hover:bg-primary dark:hover:bg-gray-600 text-base"
               >
                 Upgrade Your Plan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showDeletePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-base font-semibold mb-2 dark:text-white">
+              Confirm Deletion
+            </h3>
+            <p className="text-sm mb-4 dark:text-gray-300 leading-relaxed">
+              Are you sure you want to delete{" "}
+              {deleteType === "scheduler" ? "this scheduler" : "this user"}?
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowDeletePopup(false)}
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (deleteType === "scheduler") {
+                    handleDelete(itemToDelete);
+                  } else {
+                    handleDeleteUser(itemToDelete);
+                  }
+                  setShowDeletePopup(false);
+                }}
+                className="px-3 py-1.5 bg-red-600 text-sm text-white rounded-full hover:bg-red-700"
+              >
+                Delete
               </button>
             </div>
           </div>

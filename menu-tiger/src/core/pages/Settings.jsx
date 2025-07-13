@@ -13,6 +13,8 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Settings() {
   const [currentPage, setCurrentPage] = useState("profile");
@@ -146,16 +148,85 @@ function Settings() {
   };
 
   const handleSave = () => {
-    // Here you would typically send the data to your backend
-    console.log("Saving profile data:", {
-      firstName: profileData.firstName,
-      lastName: profileData.lastName,
-      description: profileData.description,
-      profileImage: profileData.profileImage,
-    });
+    setIsSubmitting(true);
 
-    // For demo purposes, we'll just show an alert
-    alert("Profile saved successfully!");
+    // Determine which settings to save based on currentPage
+    let settingsToSave = {};
+    let successMessage = "Settings saved successfully!";
+
+    switch (currentPage) {
+      case "profile":
+        settingsToSave = {
+          firstName: profileData.firstName,
+          lastName: profileData.lastName,
+          description: profileData.description,
+          profileImage: profileData.profileImage,
+        };
+        successMessage = "Profile saved successfully!";
+        break;
+
+      case "restaurant":
+        settingsToSave = {
+          restaurantName: "natila", // You might want to make this dynamic
+          address: "", // Add your address state here
+          email: "huluale12@gmail.com", // Make dynamic
+          contactNumber: "", // Add state
+          defaultLanguage: "english", // Add state
+          currency: "usd", // Add state
+        };
+        successMessage = "Restaurant settings saved successfully!";
+        break;
+
+      case "notification":
+        settingsToSave = {
+          // Add your notification settings state here
+        };
+        successMessage = "Notification settings saved successfully!";
+        break;
+
+      case "order":
+        settingsToSave = {
+          // Add your order settings state here
+        };
+        successMessage = "Order settings saved successfully!";
+        break;
+
+      case "qr":
+        settingsToSave = {
+          logo: selectedLogo,
+          pattern: selectedPattern,
+          eyeStyle: selectedEyeStyle,
+          color: selectedColor,
+          frame: selectedFrame,
+        };
+        successMessage = "QR code settings saved successfully!";
+        break;
+
+      default:
+        settingsToSave = {};
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      console.log(`Saving ${currentPage} settings:`, settingsToSave);
+
+      toast.success(successMessage, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          background: "#0d9488",
+          color: "#f8fafc",
+          borderRadius: "8px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+        },
+      });
+    }, 1000);
   };
 
   const handleImageUpload = (e) => {
@@ -495,14 +566,14 @@ function Settings() {
                   <button
                     key={tab.id}
                     ref={(el) => (tabsRef.current[index] = el)}
-                    className={`px-4 py-3 font-medium text-sm cursor-pointer flex-shrink-0 flex items-center ${
+                    className={`px-4 py-3 font-medium text-md cursor-pointer flex-shrink-0 flex items-center ${
                       currentPage === tab.id
                         ? "text-primary border-b-2 border-primary"
                         : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                     }`}
                     onClick={() => setCurrentPage(tab.id)}
                   >
-                    <span className="mr-2">{tab.icon}</span>
+                    <span className="mr-2 text-lg">{tab.icon}</span>
                     <span>{tab.name}</span>
                   </button>
                 ))}
@@ -1409,17 +1480,7 @@ function Settings() {
                 </div>
                 <button
                   className="bg-secondary text-white px-4 py-2 rounded-sm hover:bg-primary transition cursor-pointer"
-                  onClick={() => {
-                    const qrSettings = {
-                      logo: selectedLogo,
-                      pattern: selectedPattern,
-                      eyeStyle: selectedEyeStyle,
-                      color: selectedColor,
-                      frame: selectedFrame,
-                    };
-                    console.log("QR Settings Saved:", qrSettings);
-                    alert("QR settings saved successfully!");
-                  }}
+                  onClick={handleSave} // Make sure this is using handleSave
                 >
                   Save
                 </button>
@@ -1479,6 +1540,24 @@ function Settings() {
           )}
         </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{
+          background: "#0d9488",
+          color: "#f8fafc",
+          borderRadius: "8px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+        }}
+        className="custom-toast-container" // Add this
+      />
     </div>
   );
 }

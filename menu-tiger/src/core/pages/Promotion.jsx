@@ -9,12 +9,16 @@ import {
   FaTrash,
   FaEdit,
 } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Promotion() {
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [currentTab, setCurrentTab] = useState("promotion");
   const [promotions, setPromotions] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [promotionToDelete, setPromotionToDelete] = useState(null);
   const [promotionData, setPromotionData] = useState({
     type: "discount_on_cart",
     name: "",
@@ -29,6 +33,40 @@ function Promotion() {
   });
   const [focusedField, setFocusedField] = useState(null);
   const fileInputRef = useRef(null);
+
+  const DeleteConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+        <h3 className="text-base font-semibold mb-2 dark:text-white">
+          Confirm Deletion
+        </h3>
+        <p className="text-sm mb-4 dark:text-gray-300 leading-relaxed">
+          Are you sure you want to delete this promotion? This action cannot be
+          undone.
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={() => setShowDeletePopup(false)}
+            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              setPromotions(
+                promotions.filter((promo) => promo.id !== promotionToDelete)
+              );
+              setShowDeletePopup(false);
+              toast.success("Promotion deleted successfully");
+            }}
+            className="px-3 py-1.5 bg-red-600 text-sm text-white rounded-full hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   const handleBackClick = () => {
     setIsAddingNew(false);
@@ -48,7 +86,7 @@ function Promotion() {
       !promotionData.description ||
       !promotionData.discount
     ) {
-      alert("Please fill in all required fields!");
+      toast.error("Please fill in all required fields!");
       return;
     }
 
@@ -59,6 +97,7 @@ function Promotion() {
           promo.id === editingId ? { ...promotionData, id: editingId } : promo
         )
       );
+      toast.success("Promotion updated successfully");
     } else {
       // Add new promotion
       const newPromotion = {
@@ -68,6 +107,7 @@ function Promotion() {
         createdAt: new Date().toLocaleDateString(),
       };
       setPromotions([...promotions, newPromotion]);
+      toast.success("Promotion created successfully");
     }
 
     setIsAddingNew(false);
@@ -188,7 +228,7 @@ function Promotion() {
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center space-x-3">
                 <button
-                  className="bg-secondary text-white px-4 py-3 rounded-sm hover:bg-primary transition cursor-pointer flex items-center justify-center w-10 h-10"
+                  className="bg-secondary text-white px-4 py-3 rounded-md hover:bg-primary transition cursor-pointer flex items-center justify-center w-10 h-10"
                   onClick={handleBackClick}
                   aria-label="Back"
                   title="Back"
@@ -202,7 +242,7 @@ function Promotion() {
                 </div>
               </div>
               <button
-                className="bg-secondary cursor-pointer text-white px-4 py-3 rounded-sm hover:bg-primary transition cursor-pointer"
+                className="bg-secondary text-white px-4 py-3 rounded-md hover:bg-primary transition cursor-pointer"
                 onClick={handleSave}
               >
                 Save
@@ -502,13 +542,13 @@ function Promotion() {
             <div className="mb-6">
               <div className="flex flex-row sm:flex-row gap-4 items-start">
                 <button
-                  className="flex items-center cursor-pointer bg-primary text-white px-4 py-3 rounded-sm hover:bg-teal-700 transition-colors duration-200"
+                  className="flex items-center cursor-pointer bg-primary text-white px-4 py-3 rounded-md hover:bg-teal-700 transition-colors duration-200"
                   onClick={handleAddNewClick}
                 >
                   <FaPlus className="mr-2" />
                   Add New
                 </button>
-                <div className="border border-primary rounded-lg px-4 py-1 max-w-xl flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                <div className="border border-primary rounded-lg px-4 py-3 max-w-xl flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                   <FaQuestion className="text-primary mr-3" />
                   <p className="text-gray-700 dark:text-gray-300 flex-grow">
                     Drive sales and attract new customers with targeted
@@ -590,14 +630,17 @@ function Promotion() {
                               className="text-gray-500 hover:text-primary"
                               title="Edit"
                             >
-                              <FaEdit />
+                              <FaEdit className="text-primary" />
                             </button>
                             <button
-                              onClick={() => handleDelete(promo.id)}
+                              onClick={() => {
+                                setPromotionToDelete(promo.id);
+                                setShowDeletePopup(true);
+                              }}
                               className="text-gray-500 hover:text-red-500"
                               title="Delete"
                             >
-                              <FaTrash />
+                              <FaTrash className="text-red-500" />
                             </button>
                           </div>
                         </td>
@@ -623,6 +666,25 @@ function Promotion() {
           </>
         )}
       </div>
+      {showDeletePopup && <DeleteConfirmationModal />}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{
+          background: "#0d9488",
+          color: "#f8fafc",
+          borderRadius: "8px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+        }}
+        className="custom-toast-container" // Add this
+      />
     </div>
   );
 }

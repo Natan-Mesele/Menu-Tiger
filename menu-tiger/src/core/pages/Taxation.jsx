@@ -19,6 +19,8 @@ const Taxation = () => {
   const [taxCategories, setTaxCategories] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const handleSave = () => {
     if (!taxName) return; // Basic validation
@@ -50,6 +52,11 @@ const Taxation = () => {
     setShowForm(false);
   };
 
+  const handleDelete = (id) => {
+    setItemToDelete(id);
+    setShowDeletePopup(true);
+  };
+
   const handleEdit = (id) => {
     const categoryToEdit = taxCategories.find((item) => item.id === id);
     if (categoryToEdit) {
@@ -59,12 +66,6 @@ const Taxation = () => {
       setTakeOutRate(categoryToEdit.takeOutRate);
       setEditingId(id);
       setShowForm(true);
-    }
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this tax category?")) {
-      setTaxCategories(taxCategories.filter((item) => item.id !== id));
     }
   };
 
@@ -121,9 +122,12 @@ const Taxation = () => {
                   <FaPlus className="mr-2" />
                   Add New
                 </button>
-                <div className="flex items-center text-gray-700 dark:text-gray-300 text-sm border border-dashed border-gray-400 dark:border-gray-500 rounded-md px-3 py-2">
-                  <FaQuestionCircle className="text-primary mr-2" />
-                  Check local tax rates for accurate menu pricing
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-gray-50 dark:bg-gray-700 space-x-2">
+                  <FaQuestionCircle className="text-primary" />
+                  <span>Check local tax rates for accurate menu pricing</span>
+                  <span className="flex items-center text-primary cursor-pointer">
+                    Read more <FaChevronRight className="ml-1 text-lg" />
+                  </span>
                 </div>
               </div>
               {/* Right: Search */}
@@ -244,13 +248,16 @@ const Taxation = () => {
                   <FaChevronLeft />
                 </button>
 
+                {/* Added Taxation Text */}
+                <div className="text-gray-900 dark:text-gray-100 text-md bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-md select-none mr-4">
+                  <span>Taxation</span> <span className="text-gray-400">/</span>{" "}
+                  <span className="text-primary">Add Taxation</span>
+                </div>
+
                 {/* Texts */}
-                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-gray-50 dark:bg-gray-700 space-x-2">
-                  <FaQuestionCircle className="text-primary" />
-                  <span>Check local tax rates for accurate menu pricing</span>
-                  <span className="flex items-center text-primary cursor-pointer">
-                    Read more <FaChevronRight className="ml-1 text-lg" />
-                  </span>
+                <div className="flex items-center text-gray-700 dark:text-gray-300 text-sm border border-primary dark:border-gray-500 rounded-md px-3 py-2">
+                  <FaQuestionCircle className="text-primary mr-2" />
+                  Check local tax rates for accurate menu pricing
                 </div>
               </div>
               {/* Right Side: Save Button */}
@@ -341,6 +348,38 @@ const Taxation = () => {
           </div>
         )}
       </div>
+      {showDeletePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-base font-semibold mb-2 dark:text-white">
+              Confirm Deletion
+            </h3>
+            <p className="text-sm mb-4 dark:text-gray-300 leading-relaxed">
+              Are you sure you want to delete this tax category? This action
+              cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowDeletePopup(false)}
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setTaxCategories(
+                    taxCategories.filter((item) => item.id !== itemToDelete)
+                  );
+                  setShowDeletePopup(false);
+                }}
+                className="px-3 py-1.5 bg-red-600 text-sm text-white rounded-full hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
