@@ -45,8 +45,31 @@ function Settings() {
   const [selectedEyeStyle, setSelectedEyeStyle] = useState(null);
   const [selectedColor, setSelectedColor] = useState("#3B82F6");
   const [selectedFrame, setSelectedFrame] = useState(null);
+  const [isCustomerTipEnabled, setIsCustomerTipEnabled] = useState(false);
+  const [isCancelOrderEnabled, setIsCancelOrderEnabled] = useState(false);
   const [selectedLogo, setSelectedLogo] = useState(null);
   const [activeDesignTab, setActiveDesignTab] = useState(null);
+  const [isOrderSoundEnabled, setIsOrderSoundEnabled] = useState(false);
+  const [isFeedbackSoundEnabled, setIsFeedbackSoundEnabled] = useState(false);
+  const [isHotActionSoundEnabled, setIsHotActionSoundEnabled] = useState(false);
+  const [isOrderNotificationEnabled, setIsOrderNotificationEnabled] =
+    useState(false);
+  const [isFeedbackNotificationEnabled, setIsFeedbackNotificationEnabled] =
+    useState(false);
+  const [isHotActionNotificationEnabled, setIsHotActionNotificationEnabled] =
+    useState(false);
+
+  const [isOrderDropdownOpen, setIsOrderDropdownOpen] = useState(false);
+  const [orderSoundValue, setOrderSoundValue] = useState("");
+
+  // For Feedback Notification
+  const [isFeedbackDropdownOpen, setIsFeedbackDropdownOpen] = useState(false);
+  const [feedbackSoundValue, setFeedbackSoundValue] = useState("");
+
+  // For Hot-action Notification
+  const [isHotActionDropdownOpen, setIsHotActionDropdownOpen] = useState(false);
+  const [hotActionSoundValue, setHotActionSoundValue] = useState("");
+  const [isDefaultImage, setIsDefaultImage] = useState(false);
 
   useEffect(() => {
     const calculateVisibleTabs = () => {
@@ -634,7 +657,7 @@ function Settings() {
                     Logo <span className="text-red-500">*</span>
                   </label>
                   <div
-                    className="w-full sm:w-[400px] h-[250px] sm:h-[300px] bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex items-center justify-center relative cursor-pointer hover:border-primary transition"
+                    className="w-full sm:w-[400px] h-[250px] sm:h-[300px] bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex items-center justify-center relative cursor-pointer hover:border-primary"
                     onClick={triggerFileInput}
                   >
                     <input
@@ -958,8 +981,32 @@ function Settings() {
                   <div className="flex items-center justify-between py-3 border border-gray-300 dark:border-gray-600 rounded-md px-4">
                     <h3 className="font-medium text-sm">Default food image</h3>
                     <label className="flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" />
-                      <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                      {/* Hidden checkbox that controls the state */}
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={isDefaultImage}
+                        onChange={() => setIsDefaultImage(!isDefaultImage)}
+                      />
+                      <div className="relative w-12 h-4 overflow-visible">
+                        {/* Track background */}
+                        <div
+                          className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                            isDefaultImage
+                              ? "bg-primary/20"
+                              : "bg-gray-400 dark:bg-gray-700"
+                          }`}
+                        ></div>
+
+                        {/* Thumb (circle) */}
+                        <div
+                          className={`absolute -top-[5px] ${
+                            isDefaultImage
+                              ? "left-[26px] bg-primary border-primary/50"
+                              : "left-0 bg-white border-white"
+                          } w-7 h-7 rounded-full border transform transition-all duration-200`}
+                        ></div>
+                      </div>
                     </label>
                   </div>
                 </div>
@@ -979,7 +1026,7 @@ function Settings() {
                     </h2>
                     <div className="flex items-center px-4 py-3 border border-primary rounded-sm">
                       <FaQuestionCircle className="text-primary mr-2" />
-                      <span className="text-sm text-gray-500 dark:text-gray-400 ">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         Manage your notifications sounds
                       </span>
                     </div>
@@ -1005,27 +1052,79 @@ function Settings() {
                   </h3>
 
                   <div className="flex flex-col space-y-4">
+                    {/* Toggle switch */}
                     <div className="flex items-center justify-between border border-gray-300 dark:border-gray-600 rounded-md p-3">
                       <span className="text-sm">Enable</span>
                       <label className="flex items-center cursor-pointer">
                         <input
                           type="checkbox"
-                          className="sr-only peer"
-                          defaultChecked
+                          className="hidden"
+                          checked={isOrderSoundEnabled}
+                          onChange={() =>
+                            setIsOrderSoundEnabled(!isOrderSoundEnabled)
+                          }
                         />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                        <div className="relative w-12 h-4 overflow-visible">
+                          <div
+                            className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                              isOrderSoundEnabled
+                                ? "bg-primary/20"
+                                : "bg-gray-400 dark:bg-gray-700"
+                            }`}
+                          ></div>
+                          <div
+                            className={`absolute -top-[5px] ${
+                              isOrderSoundEnabled
+                                ? "left-[26px] bg-primary border-primary/50"
+                                : "left-0 bg-white border-white"
+                            } w-7 h-7 rounded-full border transform transition-all duration-200`}
+                          ></div>
+                        </div>
                       </label>
                     </div>
 
-                    <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
-                      <label className="w-24 text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
-                        Sound <span className="text-red-500">*</span>
-                      </label>
-                      <select className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 outline-none rounded-r-md">
-                        <option>Default Sound</option>
-                        <option>Sound 1</option>
-                        <option>Sound 2</option>
-                      </select>
+                    {/* Custom Dropdown */}
+                    <div className="relative">
+                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
+                        <label className="w-24 text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
+                          Sound <span className="text-red-500">*</span>
+                        </label>
+                        <div
+                          className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 outline-none rounded-r-md cursor-pointer flex justify-between items-center"
+                          onClick={() =>
+                            setIsOrderDropdownOpen(!isOrderDropdownOpen)
+                          }
+                        >
+                          <span>{orderSoundValue || "Default Sound"}</span>
+                          <FaChevronDown
+                            className={`transition-transform ${
+                              isOrderDropdownOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </div>
+                      </div>
+                      {isOrderDropdownOpen && (
+                        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
+                          {["Default Sound", "Sound 1", "Sound 2"].map(
+                            (option) => (
+                              <div
+                                key={option}
+                                className={`px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${
+                                  orderSoundValue === option
+                                    ? "bg-primary/10 text-primary"
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setOrderSoundValue(option);
+                                  setIsOrderDropdownOpen(false);
+                                }}
+                              >
+                                {option}
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1037,27 +1136,79 @@ function Settings() {
                   </h3>
 
                   <div className="flex flex-col space-y-4">
+                    {/* Toggle switch */}
                     <div className="flex items-center justify-between border border-gray-300 dark:border-gray-600 rounded-md p-3">
                       <span className="text-sm">Enable</span>
                       <label className="flex items-center cursor-pointer">
                         <input
                           type="checkbox"
-                          className="sr-only peer"
-                          defaultChecked
+                          className="hidden"
+                          checked={isFeedbackSoundEnabled}
+                          onChange={() =>
+                            setIsFeedbackSoundEnabled(!isFeedbackSoundEnabled)
+                          }
                         />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                        <div className="relative w-12 h-4 overflow-visible">
+                          <div
+                            className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                              isFeedbackSoundEnabled
+                                ? "bg-primary/20"
+                                : "bg-gray-400 dark:bg-gray-700"
+                            }`}
+                          ></div>
+                          <div
+                            className={`absolute -top-[5px] ${
+                              isFeedbackSoundEnabled
+                                ? "left-[26px] bg-primary border-primary/50"
+                                : "left-0 bg-white border-white"
+                            } w-7 h-7 rounded-full border transform transition-all duration-200`}
+                          ></div>
+                        </div>
                       </label>
                     </div>
 
-                    <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
-                      <label className="w-24 text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
-                        Sound <span className="text-red-500">*</span>
-                      </label>
-                      <select className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 outline-none rounded-r-md">
-                        <option>Sound 1</option>
-                        <option>Default Sound</option>
-                        <option>Sound 2</option>
-                      </select>
+                    {/* Custom Dropdown */}
+                    <div className="relative">
+                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
+                        <label className="w-24 text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
+                          Sound <span className="text-red-500">*</span>
+                        </label>
+                        <div
+                          className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 outline-none rounded-r-md cursor-pointer flex justify-between items-center"
+                          onClick={() =>
+                            setIsFeedbackDropdownOpen(!isFeedbackDropdownOpen)
+                          }
+                        >
+                          <span>{feedbackSoundValue || "Sound 1"}</span>
+                          <FaChevronDown
+                            className={`transition-transform ${
+                              isOrderDropdownOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </div>
+                      </div>
+                      {isFeedbackDropdownOpen && (
+                        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
+                          {["Sound 1", "Default Sound", "Sound 2"].map(
+                            (option) => (
+                              <div
+                                key={option}
+                                className={`px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${
+                                  feedbackSoundValue === option
+                                    ? "bg-primary/10 text-primary"
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setFeedbackSoundValue(option);
+                                  setIsFeedbackDropdownOpen(false);
+                                }}
+                              >
+                                {option}
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1069,27 +1220,79 @@ function Settings() {
                   </h3>
 
                   <div className="flex flex-col space-y-4">
+                    {/* Toggle switch */}
                     <div className="flex items-center justify-between border border-gray-300 dark:border-gray-600 rounded-md p-3">
                       <span className="text-sm">Enable</span>
                       <label className="flex items-center cursor-pointer">
                         <input
                           type="checkbox"
-                          className="sr-only peer"
-                          defaultChecked
+                          className="hidden"
+                          checked={isHotActionSoundEnabled}
+                          onChange={() =>
+                            setIsHotActionSoundEnabled(!isHotActionSoundEnabled)
+                          }
                         />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                        <div className="relative w-12 h-4 overflow-visible">
+                          <div
+                            className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                              isHotActionSoundEnabled
+                                ? "bg-primary/20"
+                                : "bg-gray-400 dark:bg-gray-700"
+                            }`}
+                          ></div>
+                          <div
+                            className={`absolute -top-[5px] ${
+                              isHotActionSoundEnabled
+                                ? "left-[26px] bg-primary border-primary/50"
+                                : "left-0 bg-white border-white"
+                            } w-7 h-7 rounded-full border transform transition-all duration-200`}
+                          ></div>
+                        </div>
                       </label>
                     </div>
 
-                    <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
-                      <label className="w-24 text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
-                        Sound <span className="text-red-500">*</span>
-                      </label>
-                      <select className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 outline-none rounded-r-md">
-                        <option>Sound 2</option>
-                        <option>Default Sound</option>
-                        <option>Sound 1</option>
-                      </select>
+                    {/* Custom Dropdown */}
+                    <div className="relative">
+                      <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
+                        <label className="w-24 text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700">
+                          Sound <span className="text-red-500">*</span>
+                        </label>
+                        <div
+                          className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 outline-none rounded-r-md cursor-pointer flex justify-between items-center"
+                          onClick={() =>
+                            setIsHotActionDropdownOpen(!isHotActionDropdownOpen)
+                          }
+                        >
+                          <span>{hotActionSoundValue || "Sound 2"}</span>
+                          <FaChevronDown
+                            className={`transition-transform ${
+                              isHotActionDropdownOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </div>
+                      </div>
+                      {isHotActionDropdownOpen && (
+                        <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg">
+                          {["Sound 2", "Default Sound", "Sound 1"].map(
+                            (option) => (
+                              <div
+                                key={option}
+                                className={`px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${
+                                  hotActionSoundValue === option
+                                    ? "bg-primary/10 text-primary"
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setHotActionSoundValue(option);
+                                  setIsHotActionDropdownOpen(false);
+                                }}
+                              >
+                                {option}
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1127,16 +1330,60 @@ function Settings() {
                     <div className="flex items-center justify-between border border-gray-300 dark:border-gray-600 rounded-md p-3">
                       <span>Enable Customer Tip</span>
                       <label className="flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={isCustomerTipEnabled}
+                          onChange={() =>
+                            setIsCustomerTipEnabled(!isCustomerTipEnabled)
+                          }
+                        />
+                        <div className="relative w-12 h-4 overflow-visible">
+                          <div
+                            className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                              isCustomerTipEnabled
+                                ? "bg-primary/20"
+                                : "bg-gray-400 dark:bg-gray-700"
+                            }`}
+                          ></div>
+                          <div
+                            className={`absolute -top-[5px] ${
+                              isCustomerTipEnabled
+                                ? "left-[26px] bg-primary border-primary/50"
+                                : "left-0 bg-white border-white"
+                            } w-7 h-7 rounded-full border transform transition-all duration-200`}
+                          ></div>
+                        </div>
                       </label>
                     </div>
 
                     <div className="flex items-center justify-between border border-gray-300 dark:border-gray-600 rounded-md p-3">
                       <span>Enable Cancel Order</span>
                       <label className="flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={isCancelOrderEnabled}
+                          onChange={() =>
+                            setIsCancelOrderEnabled(!isCancelOrderEnabled)
+                          }
+                        />
+                        <div className="relative w-12 h-4 overflow-visible">
+                          <div
+                            className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                              isCancelOrderEnabled
+                                ? "bg-primary/20"
+                                : "bg-gray-400 dark:bg-gray-700"
+                            }`}
+                          ></div>
+                          <div
+                            className={`absolute -top-[5px] ${
+                              isCancelOrderEnabled
+                                ? "left-[26px] bg-primary border-primary/50"
+                                : "left-0 bg-white border-white"
+                            } w-7 h-7 rounded-full border transform transition-all duration-200`}
+                          ></div>
+                        </div>
                       </label>
                     </div>
                   </div>

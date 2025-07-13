@@ -275,63 +275,77 @@ const Sidebar = ({
 
       <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
 
-      <div className="relative overflow-hidden">
-        {/* Decorative half-circle only if sidebar is NOT collapsed */}
-        {!sidebarCollapsed && (
-          <div className="absolute top-0 right-0 w-16 h-14 bg-[#8591A1] dark:bg-[#5a6475] rounded-bl-full z-10 -translate-y-1" />
-        )}
-        <SidebarItem
-          icon="https://www.app.menutigr.com/static/media/video.94336a2d515ea2a96b401489f0034543.svg"
-          label={
-            <div className="text-left leading-tight">
-              <div className="font-medium text-md dark:text-gray-200">
-                Onboarding
-              </div>
-              <div className="text-sm opacity-80 text-gray-500 dark:text-gray-400">
-                Video
-              </div>
+      <div className="space-y-3">
+        {/* Onboarding Video - Simplified */}
+        <div className="relative overflow-hidden">
+          {/* Half-circle decoration */}
+          {!sidebarCollapsed && (
+            <div className="absolute top-0 right-0 w-14 h-12 bg-[#8591A1] dark:bg-[#5a6475] rounded-bl-full z-10 -translate-y-1" />
+          )}
+          <div
+            onClick={() => setShowVideoPopup(true)}
+            className={`flex items-center gap-3 px-4 py-3 cursor-pointer rounded-md relative ${
+              !sidebarCollapsed
+                ? "bg-[#E2E5E8] dark:bg-blue-900/30"
+                : "bg-transparent"
+            } ${
+              activePage === "Onboarding Video"
+                ? "text-primary font-medium"
+                : "text-gray-700 dark:text-gray-300"
+            }`}
+          >
+            <div className="bg-white dark:bg-gray-700 p-3 rounded-md border dark:border-primary dark:border">
+              <img
+                src="https://www.app.menutigr.com/static/media/video.94336a2d515ea2a96b401489f0034543.svg"
+                className="w-7 h-7 scale-110"
+                alt="Video"
+              />
             </div>
-          }
-          active={activePage === "Onboarding Video"}
-          onClick={() => setShowVideoPopup(true)}
-          collapsed={sidebarCollapsed}
-          className={`py-4 ${
-            !sidebarCollapsed
-              ? "bg-[#E2E5E8] dark:bg-blue-900/30"
-              : "bg-transparent"
-          }`}
-        />
-      </div>
+            {!sidebarCollapsed && (
+              <div className="text-left">
+                <div className="font-medium">Onboarding</div>
+                <div className="text-sm opacity-80">Video</div>
+              </div>
+            )}
+          </div>
+        </div>
 
-      <div className="relative overflow-hidden">
-        {/* Decorative half-circle only if sidebar is NOT collapsed */}
-        {!sidebarCollapsed && (
-          <div className="absolute top-0 right-0 w-16 h-14 bg-[#8591A1] dark:bg-[#5a6475] rounded-bl-full z-10 -translate-y-1" />
-        )}
-        <SidebarItem
-          icon="https://www.app.menutigr.com/static/media/video.94336a2d515ea2a96b401489f0034543.svg"
-          label={
-            <div className="text-left leading-tight">
-              <div className="font-medium text-md dark:text-gray-200">
-                Download
-              </div>
-              <div className="text-sm opacity-80 text-gray-500 dark:text-gray-400">
-                E-book
-              </div>
+        {/* Download E-book - Simplified */}
+        <div className="relative overflow-hidden">
+          {/* Half-circle decoration */}
+          {!sidebarCollapsed && (
+            <div className="absolute top-0 right-0 w-14 h-12 bg-[#8591A1] dark:bg-[#5a6475] rounded-bl-full z-10 -translate-y-1" />
+          )}
+          <div
+            onClick={() => {
+              window.open("https://www.menutiger.com/ebooks", "_blank");
+              setActivePage("Download E-book");
+            }}
+            className={`flex items-center gap-3 px-4 py-3 cursor-pointer rounded-md relative ${
+              !sidebarCollapsed
+                ? "bg-[#E2E5E8] dark:bg-green-900/30"
+                : "bg-transparent"
+            } ${
+              activePage === "Download E-book"
+                ? "text-primary font-medium"
+                : "text-gray-700 dark:text-gray-300"
+            }`}
+          >
+            <div className="bg-white dark:bg-gray-700 p-3 rounded-md border dark:border-primary dark:border">
+              <img
+                src="https://www.app.menutigr.com/static/media/file-upload.b1ad240de0819ef255bbf24eae443b06.svg"
+                className="w-7 h-7 scale-110"
+                alt="E-book"
+              />
             </div>
-          }
-          active={activePage === "Download E-book"}
-          onClick={() => {
-            window.open("https://www.menutiger.com/ebooks", "_blank");
-            setActivePage("Download E-book");
-          }}
-          collapsed={sidebarCollapsed}
-          className={`py-4 ${
-            !sidebarCollapsed
-              ? "bg-[#E2E5E8] dark:bg-green-900/30"
-              : "bg-transparent"
-          }`}
-        />
+            {!sidebarCollapsed && (
+              <div className="text-left">
+                <div className="font-medium">Download</div>
+                <div className="text-sm opacity-80">E-book</div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </aside>
   );
@@ -505,7 +519,7 @@ const DashboardLayout = () => {
             <div className="relative flex items-center">
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className={`relative flex items-center justify-between cursor-pointer w-16 h-6 rounded-full p-1 transition-colors duration-100 focus:outline-none ${
+                className={`relative flex items-center justify-between cursor-pointer w-16 h-6 rounded-full focus:outline-none ${
                   darkMode ? "bg-gray-600" : "bg-gray-300"
                 }`}
                 title={

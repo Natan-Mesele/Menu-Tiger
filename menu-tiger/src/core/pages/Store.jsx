@@ -52,6 +52,7 @@ function Stores() {
   const [users, setUsers] = useState([]);
   const [selectedLogo, setSelectedLogo] = useState(null);
   const [activeDesignTab, setActiveDesignTab] = useState(null);
+  const [isDayActive, setIsDayActive] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     id: null,
@@ -1438,26 +1439,45 @@ function Stores() {
                       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         {/* Day and Toggle */}
                         <div className="flex items-center gap-4 w-full md:w-auto">
-                          <div className="flex items-center gap-4 border border-gray-200 px-4 py-2 rounded-md flex-1 md:flex-none">
-                            <span className="w-24 text-md">{day}</span>
-                            <label className="relative inline-flex items-center cursor-pointer">
+                          <div className="flex items-center gap-4 border border-gray-200 dark:border-gray-600 px-4 py-2 rounded-md flex-1 md:flex-none">
+                            <span className="w-24 text-md dark:text-gray-100">
+                              {day}
+                            </span>
+                            <label className="flex items-center cursor-pointer">
                               <input
                                 type="checkbox"
                                 className="sr-only peer"
-                                defaultChecked
+                                checked={isDayActive}
                                 onChange={(e) => {
-                                  // Handle toggle change
+                                  setIsDayActive(e.target.checked);
                                   console.log(
                                     `${day} active:`,
                                     e.target.checked
                                   );
                                 }}
                               />
-                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-500 peer-checked:bg-primary"></div>
+                              <div className="relative w-12 h-4 overflow-visible">
+                                {/* Track background */}
+                                <div
+                                  className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                                    isDayActive
+                                      ? "bg-primary/20"
+                                      : "bg-gray-400 dark:bg-gray-700"
+                                  }`}
+                                ></div>
+
+                                {/* Thumb (circle) - White when left, primary when right */}
+                                <div
+                                  className={`absolute -top-[5px] ${
+                                    isDayActive
+                                      ? "left-[26px] bg-primary border-primary/50"
+                                      : "left-0 bg-white border-white"
+                                  } w-7 h-7 rounded-full border transform transition-all duration-200`}
+                                ></div>
+                              </div>
                             </label>
                           </div>
                         </div>
-
                         {/* Time Slots */}
                         <div className="flex items-center gap-4 w-full md:w-auto">
                           <div className="flex items-center gap-2 flex-1">
@@ -1612,19 +1632,37 @@ function Stores() {
                 {/* Location Toggle - unchanged */}
                 <div className="flex items-center justify-between px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-md mb-6 max-w-90">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-500">
+                    <span className="text-gray-500 dark:text-gray-400">
                       Enable location details
                     </span>
                     <FaQuestionCircle className="text-primary text-sm" />
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       className="sr-only peer"
                       checked={locationEnabled}
                       onChange={() => setLocationEnabled(!locationEnabled)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-500 peer-checked:bg-primary"></div>
+                    <div className="relative w-12 h-4 overflow-visible">
+                      {/* Track background */}
+                      <div
+                        className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                          locationEnabled
+                            ? "bg-primary/20"
+                            : "bg-gray-400 dark:bg-gray-700"
+                        }`}
+                      ></div>
+
+                      {/* Thumb (circle) - White when left, primary when right */}
+                      <div
+                        className={`absolute -top-[5px] ${
+                          locationEnabled
+                            ? "left-[26px] bg-primary border-primary/50"
+                            : "left-0 bg-white border-white"
+                        } w-7 h-7 rounded-full border transform transition-all duration-200`}
+                      ></div>
+                    </div>
                   </label>
                 </div>
 

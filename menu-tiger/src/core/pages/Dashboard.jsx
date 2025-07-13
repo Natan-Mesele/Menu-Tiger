@@ -3,7 +3,7 @@ import { FaRocket, FaEye, FaChevronDown, FaBars } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import "react-datepicker/dist/react-datepicker.css"; // required default style
+import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/datepicker.css";
 
 const sampleData = {
@@ -44,6 +44,7 @@ const Dashboard = () => {
   const [startDate, setStartDate] = useState(new Date("2025-05-26"));
   const [endDate, setEndDate] = useState(new Date("2025-06-24"));
   const [downloadDropdownOpen, setDownloadDropdownOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState("All");
 
   const handleDateChange = (dates) => {
     const [start, end] = dates;
@@ -206,7 +207,15 @@ const Dashboard = () => {
                   {["All", "Menu Tiger"].map((item) => (
                     <div
                       key={item}
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className={`block px-4 py-2 text-sm cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                        selectedItem === item
+                          ? "bg-primary/10 text-primary"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setSelectedItem(item);
+                        setAllDropdownOpen(false);
+                      }}
                     >
                       {item}
                     </div>

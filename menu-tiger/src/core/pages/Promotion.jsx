@@ -8,9 +8,14 @@ import {
   FaChevronLeft,
   FaTrash,
   FaEdit,
+  FaQuestionCircle,
+  FaCalendarAlt,
+  FaClock,
 } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function Promotion() {
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -19,6 +24,8 @@ function Promotion() {
   const [editingId, setEditingId] = useState(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [promotionToDelete, setPromotionToDelete] = useState(null);
+  const [startDateTime, setStartDateTime] = useState("");
+  const [endDateTime, setEndDateTime] = useState("");
   const [promotionData, setPromotionData] = useState({
     type: "discount_on_cart",
     name: "",
@@ -31,8 +38,25 @@ function Promotion() {
     image:
       "https://menutigr-resources.s3.us-west-2.amazonaws.com/default_discount_image.png",
   });
+  const [checked, setChecked] = useState(false);
+  const [hasCustomPeriod, setHasCustomPeriod] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [focusedField, setFocusedField] = useState(null);
+
+  const startRef = useRef();
+  const endRef = useRef();
   const fileInputRef = useRef(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission
+    console.log({
+      hasCustomPeriod,
+      startDateTime,
+      endDateTime,
+    });
+  };
 
   const DeleteConfirmationModal = () => (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -468,21 +492,107 @@ function Promotion() {
 
                   {/* Custom discount period */}
                   <div className="flex items-center justify-between p-3 border border-gray-300 dark:border-gray-600 rounded-md">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Custom discount period
-                    </span>
-                    <label className="relative inline-flex items-center cursor-pointer">
+                    <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        name="customPeriod"
-                        checked={promotionData.customPeriod}
-                        onChange={handleInputChange}
-                        className="sr-only peer"
+                        checked={checked}
+                        onChange={(e) => setChecked(e.target.checked)}
+                        className="h-5 w-5 rounded cursor-pointer border-gray-300 text-primary focus:ring-primary"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
-                    </label>
+                      <span className="text-sm font-medium text-gray-400 dark:text-gray-300">
+                        Custom discount period
+                      </span>
+                    </div>
+                    <FaQuestionCircle className="text-primary text-lg" />
                   </div>
 
+                  {/* Show Start & End Date when checkbox is checked */}
+                  {checked && (
+                    <div className="space-y-4 mt-3">
+                      {/* Start Date */}
+                      <div
+                        className={`flex items-center border ${
+                          focusedField === "startDate"
+                            ? "border-primary"
+                            : "border-gray-300 dark:border-gray-600"
+                        } rounded-md transition-colors relative`}
+                      >
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 whitespace-nowrap">
+                          Start Date <span className="text-red-500">*</span>
+                        </span>
+                        <div className="relative flex-1">
+                          <DatePicker
+                            ref={startRef}
+                            selected={startDate}
+                            onChange={(date) => setStartDate(date)}
+                            onFocus={() => setFocusedField("startDate")}
+                            onBlur={() => setFocusedField(null)}
+                            className="w-full px-3 py-2 bg-white dark:bg-gray-800 outline-none rounded-r-md pointer-events-none"
+                            placeholderText="MM/DD/YYYY hh:mm aa"
+                            dateFormat="MM/dd/yyyy h:mm aa"
+                            showTimeSelect
+                            timeFormat="h:mm aa"
+                            timeIntervals={15}
+                            popperPlacement="bottom-start"
+                            open={focusedField === "startDate"}
+                            onClickOutside={() => setFocusedField(null)}
+                            readOnly
+                          />
+                          <div
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                            onClick={() => {
+                              setFocusedField("startDate");
+                              startRef.current.setFocus();
+                            }}
+                          >
+                            <FaCalendarAlt />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* End Date */}
+                      <div
+                        className={`flex items-center border ${
+                          focusedField === "endDate"
+                            ? "border-primary"
+                            : "border-gray-300 dark:border-gray-600"
+                        } rounded-md transition-colors relative`}
+                      >
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3 py-2 border-r border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 whitespace-nowrap">
+                          End Date <span className="text-red-500">*</span>
+                        </span>
+                        <div className="relative flex-1">
+                          <DatePicker
+                            ref={endRef}
+                            selected={endDate}
+                            onChange={(date) => setEndDate(date)}
+                            onFocus={() => setFocusedField("endDate")}
+                            onBlur={() => setFocusedField(null)}
+                            className="w-full px-3 py-2 bg-white dark:bg-gray-800 outline-none rounded-r-md pointer-events-none"
+                            placeholderText="MM/DD/YYYY hh:mm aa"
+                            dateFormat="MM/dd/yyyy h:mm aa"
+                            showTimeSelect
+                            timeFormat="h:mm aa"
+                            timeIntervals={15}
+                            minDate={startDate}
+                            popperPlacement="bottom-start"
+                            open={focusedField === "endDate"}
+                            onClickOutside={() => setFocusedField(null)}
+                            readOnly
+                          />
+                          <div
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                            onClick={() => {
+                              setFocusedField("endDate");
+                              endRef.current.setFocus();
+                            }}
+                          >
+                            <FaCalendarAlt />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   {/* Image upload */}
                   <div className="border border-gray-300 dark:border-gray-600 rounded-md p-4">
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -531,8 +641,11 @@ function Promotion() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <p>Localize content goes here...</p>
+              <div className="flex items-center gap-2">
+                <p className="text-md text-gray-400 font-medium">
+                  Text localization
+                </p>
+                <FaQuestionCircle className="text-primary cursor-pointer" />
               </div>
             )}
           </>
@@ -616,14 +729,32 @@ function Promotion() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center space-x-4">
-                            <label className="relative inline-flex items-center cursor-pointer">
+                            <label className="flex items-center cursor-pointer">
                               <input
                                 type="checkbox"
                                 checked={promo.status === "Active"}
                                 onChange={() => togglePromotionStatus(promo.id)}
                                 className="sr-only peer"
                               />
-                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                              <div className="relative w-12 h-4 overflow-visible">
+                                {/* Track background */}
+                                <div
+                                  className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                                    promo.status === "Active"
+                                      ? "bg-primary/20"
+                                      : "bg-gray-400 dark:bg-gray-700"
+                                  }`}
+                                ></div>
+
+                                {/* Thumb (circle) - White when left, primary when right */}
+                                <div
+                                  className={`absolute -top-[5px] ${
+                                    promo.status === "Active"
+                                      ? "left-[26px] bg-primary border-primary/50"
+                                      : "left-0 bg-white border-white"
+                                  } w-7 h-7 rounded-full border transform transition-all duration-200`}
+                                ></div>
+                              </div>
                             </label>
                             <button
                               onClick={() => handleEdit(promo.id)}

@@ -27,6 +27,9 @@ const tableData = [
 function Orders() {
   const [storeOpen, setStoreOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [selectedStore, setSelectedStore] = useState("All");
+  const [selectedPayment, setSelectedPayment] = React.useState("All");
+  const [selectedStatus, setSelectedStatus] = React.useState("All");
   const [statusOpen, setStatusOpen] = useState(false);
   const storeRef = useRef(null);
   const paymentRef = useRef(null);
@@ -121,9 +124,9 @@ function Orders() {
               }`}
               onClick={() => setStoreOpen(!storeOpen)}
             >
-              <FaStore className="absolute left-3 text-primary dark:text-gray-500 text-2xl" />
+              <FaStore className="absolute left-3 text-primary dark:text-primary-dark text-2xl" />
               <span className="ml-2">All</span>
-              <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-500" />
+              <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-400" />
             </div>
 
             {storeOpen && (
@@ -131,7 +134,15 @@ function Orders() {
                 {["All", "Tiger"].map((item) => (
                   <div
                     key={item}
-                    className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                    onClick={() => {
+                      setSelectedStore(item);
+                      setStoreOpen(false);
+                    }}
+                    className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      selectedStore === item
+                        ? "bg-fifth dark:bg-gray-700 text-gray-900 dark:text-white"
+                        : "text-gray-700 dark:text-gray-200"
+                    }`}
                   >
                     {item}
                   </div>
@@ -150,11 +161,11 @@ function Orders() {
               }`}
               onClick={() => setPaymentOpen(!paymentOpen)}
             >
-              <span className="absolute left-3 text-white bg-primary dark:bg-primary rounded-full w-7 h-7 flex items-center justify-center text-xl font-semibold">
+              <span className="absolute left-3 text-white bg-primary dark:bg-primary-dark rounded-full w-7 h-7 flex items-center justify-center text-xl font-semibold">
                 $
               </span>
               <span className="ml-2">All</span>
-              <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-500" />
+              <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-400" />
             </div>
 
             {paymentOpen && (
@@ -162,7 +173,15 @@ function Orders() {
                 {["All", "Paid", "Unpaid", "Partial"].map((item) => (
                   <div
                     key={item}
-                    className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                    onClick={() => {
+                      setSelectedPayment(item);
+                      setPaymentOpen(false);
+                    }}
+                    className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      selectedPayment === item
+                        ? "bg-fifth dark:bg-gray-700 text-gray-900 dark:text-white"
+                        : "text-gray-700 dark:text-gray-200"
+                    }`}
                   >
                     {item}
                   </div>
@@ -174,18 +193,18 @@ function Orders() {
           {/* Status dropdown */}
           <div className="relative w-full" ref={statusRef}>
             <div
-              className={`flex items-center w-full px-10 py-3 border rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer
-      ${
-        statusOpen
-          ? "border-primary dark:border-primary"
-          : "border-gray-300 dark:border-gray-600"
-      }`}
+              className={`flex items-center w-full px-10 py-3 border rounded-md bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 cursor-pointer ${
+                statusOpen
+                  ? "border-primary dark:border-primary-dark"
+                  : "border-gray-300 dark:border-gray-600"
+              }`}
               onClick={() => setStatusOpen(!statusOpen)}
             >
-              <FaCar className="absolute left-3 text-primary dark:text-primary text-2xl" />
+              <FaCar className="absolute left-3 text-primary dark:text-primary-dark text-2xl" />
               <span className="ml-2">Status</span>
-              <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-500" />
+              <FaChevronDown className="absolute right-3 text-gray-400 dark:text-gray-400" />
             </div>
+
             {statusOpen && (
               <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg">
                 {[
@@ -197,7 +216,15 @@ function Orders() {
                 ].map((item) => (
                   <div
                     key={item}
-                    className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                    onClick={() => {
+                      setSelectedStatus(item);
+                      setStatusOpen(false);
+                    }}
+                    className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      selectedStatus === item
+                        ? "bg-fifth dark:bg-gray-700 text-gray-900 dark:text-white"
+                        : "text-gray-700 dark:text-gray-200"
+                    }`}
                   >
                     {item}
                   </div>
