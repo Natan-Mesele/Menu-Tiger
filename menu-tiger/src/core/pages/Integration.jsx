@@ -363,7 +363,7 @@ function Integration() {
                           <label className="flex items-center cursor-pointer">
                             <input
                               type="checkbox"
-                              className="sr-only peer"
+                              className="hidden"
                               checked={card.isEnabled}
                               onChange={() =>
                                 card.setIsEnabled(!card.isEnabled)
@@ -399,7 +399,7 @@ function Integration() {
                           <label className="flex items-center cursor-pointer">
                             <input
                               type="checkbox"
-                              className="sr-only peer"
+                              className="hidden"
                               checked={card.isEnabled}
                               onChange={() =>
                                 card.setIsEnabled(!card.isEnabled)

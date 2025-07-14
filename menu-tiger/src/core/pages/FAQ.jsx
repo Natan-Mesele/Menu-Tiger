@@ -1,5 +1,6 @@
 import React from "react";
 import { FaSearch } from "react-icons/fa";
+import logo from "../../assets/img/download.png";
 
 function Faq() {
   const categories = [
@@ -53,11 +54,21 @@ function Faq() {
         {/* Logo */}
         {/* Header Bar with Logo and Menu */}
         <div className="flex justify-between items-center mb-6">
-          <img
-            src="https://www.menutiger.com/_next/static/media/logo.80aeb17b.svg"
-            alt="Menu Tiger Logo"
-            className="h-10"
-          />
+          <div className="flex items-center gap-20">
+            {/* Light mode logo (shown only in light mode) */}
+            <img
+              src={logo}
+              alt="Logo"
+              className="h-10 ml-4 hidden md:block dark:hidden"
+            />
+
+            {/* Dark mode logo (shown only in dark mode) */}
+            <img
+              src="https://www.app.menutigr.com/static/media/menu-tiger-logo-white.3d108f67347e54014797.png"
+              alt="Logo Dark"
+              className="h-10 ml-4 hidden md:dark:block md:hidden"
+            />
+          </div>
           <nav>
             <a
               href="#"

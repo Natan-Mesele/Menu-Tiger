@@ -40,12 +40,15 @@ const SidebarItem = ({
   className,
 }) => (
   <div
-    onClick={onClick}
+    onClick={() => {
+      onClick();
+      setActivePage(label); // Ensure activePage state updates
+    }}
     className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-fifth hover:text-secondary dark:hover:bg-gray-700 rounded-md ${
       active ? "bg-fifth text-secondary font-medium dark:bg-gray-700" : ""
     } ${className || ""}`}
   >
-    <img src={icon} alt={label} className={`w-5 h-5 ${active ? "" : ""}`} />
+    <img src={icon} alt={label} className={`w-6 h-6 ${active ? "" : ""}`} />
     {!collapsed && <span>{label}</span>}
   </div>
 );
@@ -99,7 +102,10 @@ const Sidebar = ({
         onClick={() => setActivePage("Orders")}
         collapsed={sidebarCollapsed}
       />
-      <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+
+      {!sidebarCollapsed && (
+        <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+      )}
 
       {/* Store Dropdown */}
       <div>
@@ -256,7 +262,9 @@ const Sidebar = ({
         collapsed={sidebarCollapsed}
       />
 
-      <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+      {!sidebarCollapsed && (
+        <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+      )}
 
       <SidebarItem
         icon="https://www.app.menutigr.com/static/media/integrations.1a8ee2afe7be8398e82ee2224e4c46ef.svg"
@@ -273,79 +281,67 @@ const Sidebar = ({
         collapsed={sidebarCollapsed}
       />
 
-      <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+      {!sidebarCollapsed && (
+        <div className="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+      )}
 
       <div className="space-y-3">
-        {/* Onboarding Video - Simplified */}
-        <div className="relative overflow-hidden">
-          {/* Half-circle decoration */}
-          {!sidebarCollapsed && (
+        {/* Onboarding Video - Hidden when collapsed */}
+        {!sidebarCollapsed && (
+          <div className="relative overflow-hidden">
             <div className="absolute top-0 right-0 w-14 h-12 bg-[#8591A1] dark:bg-[#5a6475] rounded-bl-full z-10 -translate-y-1" />
-          )}
-          <div
-            onClick={() => setShowVideoPopup(true)}
-            className={`flex items-center gap-3 px-4 py-3 cursor-pointer rounded-md relative ${
-              !sidebarCollapsed
-                ? "bg-[#E2E5E8] dark:bg-blue-900/30"
-                : "bg-transparent"
-            } ${
-              activePage === "Onboarding Video"
-                ? "text-primary font-medium"
-                : "text-gray-700 dark:text-gray-300"
-            }`}
-          >
-            <div className="bg-white dark:bg-gray-700 p-3 rounded-md border dark:border-primary dark:border">
-              <img
-                src="https://www.app.menutigr.com/static/media/video.94336a2d515ea2a96b401489f0034543.svg"
-                className="w-7 h-7 scale-110"
-                alt="Video"
-              />
-            </div>
-            {!sidebarCollapsed && (
+            <div
+              onClick={() => setShowVideoPopup(true)}
+              className={`flex items-center gap-3 px-4 py-3 cursor-pointer rounded-md relative bg-[#E2E5E8] dark:bg-blue-900/30 ${
+                activePage === "Onboarding Video"
+                  ? "text-primary font-medium"
+                  : "text-gray-700 dark:text-gray-300"
+              }`}
+            >
+              <div className="bg-white dark:bg-gray-700 p-3 rounded-md border dark:border-primary dark:border">
+                <img
+                  src="https://www.app.menutigr.com/static/media/video.94336a2d515ea2a96b401489f0034543.svg"
+                  className="w-7 h-7 scale-110"
+                  alt="Video"
+                />
+              </div>
               <div className="text-left">
                 <div className="font-medium">Onboarding</div>
                 <div className="text-sm opacity-80">Video</div>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Download E-book - Simplified */}
-        <div className="relative overflow-hidden">
-          {/* Half-circle decoration */}
-          {!sidebarCollapsed && (
-            <div className="absolute top-0 right-0 w-14 h-12 bg-[#8591A1] dark:bg-[#5a6475] rounded-bl-full z-10 -translate-y-1" />
-          )}
-          <div
-            onClick={() => {
-              window.open("https://www.menutiger.com/ebooks", "_blank");
-              setActivePage("Download E-book");
-            }}
-            className={`flex items-center gap-3 px-4 py-3 cursor-pointer rounded-md relative ${
-              !sidebarCollapsed
-                ? "bg-[#E2E5E8] dark:bg-green-900/30"
-                : "bg-transparent"
-            } ${
-              activePage === "Download E-book"
-                ? "text-primary font-medium"
-                : "text-gray-700 dark:text-gray-300"
-            }`}
-          >
-            <div className="bg-white dark:bg-gray-700 p-3 rounded-md border dark:border-primary dark:border">
-              <img
-                src="https://www.app.menutigr.com/static/media/file-upload.b1ad240de0819ef255bbf24eae443b06.svg"
-                className="w-7 h-7 scale-110"
-                alt="E-book"
-              />
             </div>
-            {!sidebarCollapsed && (
+          </div>
+        )}
+
+        {/* Download E-book - Hidden when collapsed */}
+        {!sidebarCollapsed && (
+          <div className="relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-14 h-12 bg-[#8591A1] dark:bg-[#5a6475] rounded-bl-full z-10 -translate-y-1" />
+            <div
+              onClick={() => {
+                window.open("https://www.menutiger.com/ebooks", "_blank");
+                setActivePage("Download E-book");
+              }}
+              className={`flex items-center gap-3 px-4 py-3 cursor-pointer rounded-md relative bg-[#E2E5E8] dark:bg-green-900/30 ${
+                activePage === "Download E-book"
+                  ? "text-primary font-medium"
+                  : "text-gray-700 dark:text-gray-300"
+              }`}
+            >
+              <div className="bg-white dark:bg-gray-700 p-3 rounded-md border dark:border-primary dark:border">
+                <img
+                  src="https://www.app.menutigr.com/static/media/file-upload.b1ad240de0819ef255bbf24eae443b06.svg"
+                  className="w-7 h-7 scale-110"
+                  alt="E-book"
+                />
+              </div>
               <div className="text-left">
                 <div className="font-medium">Download</div>
                 <div className="text-sm opacity-80">E-book</div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </aside>
   );
@@ -496,25 +492,33 @@ const DashboardLayout = () => {
         {/* Header */}
         <header className="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 shadow-md z-20">
           <div className="flex items-center gap-20">
+            {/* Light mode logo (shown only in light mode) */}
             <img
               src={logo}
               alt="Logo"
-              className="h-8 ml-4 hidden md:block dark:invert"
+              className="h-8 ml-4 hidden md:block dark:hidden"
             />
+
+            {/* Dark mode logo (shown only in dark mode) */}
+            <img
+              src="https://www.app.menutigr.com/static/media/menu-tiger-logo-white.3d108f67347e54014797.png"
+              alt="Logo Dark"
+              className="h-8 ml-4 hidden md:dark:block md:hidden"
+            />
+
             <FaBars
               className="text-xl cursor-pointer"
               onClick={() => {
                 if (isMobile) {
-                  // Toggle sidebar on mobile
                   setForceShowOnMobile((prev) => !prev);
                   setSidebarCollapsed(false);
                 } else {
-                  // Toggle collapsed state on desktop
                   setSidebarCollapsed(!sidebarCollapsed);
                 }
               }}
             />
           </div>
+
           <div className="flex items-center gap-4">
             <div className="relative flex items-center">
               <button
