@@ -39,10 +39,14 @@ function Surveys() {
   const [questionType, setQuestionType] = useState("text");
   const [isQuestionRequired, setIsQuestionRequired] = useState(false);
   const [options, setOptions] = useState([""]);
+
+  // Preview state
   const [textAnswer, setTextAnswer] = useState("");
   const [starRating, setStarRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const [yesNoAnswer, setYesNoAnswer] = useState(null);
   const [selectedSmiley, setSelectedSmiley] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState({});
 
   // Handlers
   const handleAddNewClick = () => {
@@ -172,6 +176,38 @@ function Surveys() {
     });
   };
 
+  // Preview interaction handlers
+  const handleTextChange = (e) => {
+    setTextAnswer(e.target.value);
+  };
+
+  const handleStarClick = (rating) => {
+    setStarRating(rating);
+  };
+
+  const handleStarHover = (rating) => {
+    setHoverRating(rating);
+  };
+
+  const handleStarLeave = () => {
+    setHoverRating(0);
+  };
+
+  const handleYesNoClick = (answer) => {
+    setYesNoAnswer(answer);
+  };
+
+  const handleSmileyClick = (smiley) => {
+    setSelectedSmiley(smiley);
+  };
+
+  const handleOptionSelect = (questionIndex, optionIndex) => {
+    setSelectedOptions({
+      ...selectedOptions,
+      [questionIndex]: optionIndex,
+    });
+  };
+
   return (
     <div className="p-6 bg-gray-200 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100">
       {/* Header */}
@@ -290,6 +326,7 @@ function Surveys() {
                       Welcome note <span className="text-red-500">*</span>
                     </span>
                     <textarea
+                      rows={3}
                       value={formData.welcomeNote}
                       onChange={(e) =>
                         setFormData({
@@ -298,27 +335,8 @@ function Surveys() {
                         })
                       }
                       className="flex-1 px-3 py-2 bg-white dark:bg-gray-800 outline-none rounded-b-md"
-                      placeholder="Enter welcome message"
-                      rows={3}
+                      placeholder="Enter welcome message for survey takers"
                     />
-                  </div>
-
-                  {/* Survey Active Toggle */}
-                  <div className="flex items-center justify-between p-3 border border-gray-300 dark:border-gray-600 rounded-md">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Active
-                    </span>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.active}
-                        onChange={(e) =>
-                          setFormData({ ...formData, active: e.target.checked })
-                        }
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
-                    </label>
                   </div>
 
                   {/* Questions Section */}
@@ -430,65 +448,74 @@ function Surveys() {
                   </div>
                 </div>
                 {/* Right Column - Preview */}
-                <div className="space-y-6 h-[calc(100vh-150px)] flex flex-col justify-between py-4 rounded-md overflow-y-auto border border-gray-200 dark:border-gray-700 pl-6">
-                  <h3 className="font-medium text-center">Preview</h3>
+                <div className="space-y-6 h-[500px] flex flex-col justify-between py-4 rounded-md overflow-y-auto border border-gray-200 dark:border-gray-700 pl-6">
+                  {/* Welcome message with adjusted spacing */}
+                  <div className="space-y-4 text-center">
+                    <h3 className="font-medium text-xl">Welcome</h3>
+                    <p className="text-sm text-gray-600 font-medium">
+                      {formData.welcomeNote || "Question *"}
+                    </p>
+                  </div>
 
-                  {questionText && (
-                    <div className="border border-gray-200 dark:border-gray-700 rounded-md p-4 bg-white dark:bg-gray-800 text-center">
+                  {/* Question Preview - shows based on selected type */}
+                  <div className="flex-1 flex flex-col justify-center">
+                    <div className="bg-white dark:bg-gray-800 text-center">
                       <h3 className="font-medium mb-4">
-                        {questionText}{" "}
+                        {questionText || ""}{" "}
                         {isQuestionRequired && (
                           <span className="text-red-500">*</span>
                         )}
                       </h3>
 
                       {questionType === "text" && (
-                        <input
-                          type="text"
+                        <textarea
+                          rows={4}
                           value={textAnswer}
-                          onChange={(e) => setTextAnswer(e.target.value)}
-                          className="w-3/4 mx-auto border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800"
+                          onChange={handleTextChange}
+                          className="w-3/4 mx-auto border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 resize-none"
                           placeholder="Your answer"
-                        />
+                        ></textarea>
                       )}
 
                       {questionType === "rating" && (
                         <div className="flex justify-center space-x-2">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <button
+                            <span
                               key={star}
-                              className={`text-3xl ${
-                                star <= starRating
-                                  ? "text-yellow-400"
+                              className={`text-4xl cursor-pointer transition-transform duration-200 ${
+                                (hoverRating || starRating) >= star
+                                  ? "text-yellow-400 scale-110"
                                   : "text-gray-400"
                               }`}
-                              onClick={() => setStarRating(star)}
+                              onClick={() => handleStarClick(star)}
+                              onMouseEnter={() => handleStarHover(star)}
+                              onMouseLeave={handleStarLeave}
                             >
                               ★
-                            </button>
+                            </span>
                           ))}
                         </div>
                       )}
 
                       {questionType === "yes_no" && (
-                        <div className="flex justify-center space-x-4">
+                        <div className="flex justify-center space-x-6">
                           <button
-                            className={`px-6 py-2 rounded-md ${
+                            className={`px-6 py-2 border rounded-full transition duration-300 ${
                               yesNoAnswer === "yes"
-                                ? "bg-green-500 text-white"
-                                : "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
+                                ? "bg-green-500 text-white border-green-500"
+                                : "border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
                             }`}
-                            onClick={() => setYesNoAnswer("yes")}
+                            onClick={() => handleYesNoClick("yes")}
                           >
                             Yes
                           </button>
                           <button
-                            className={`px-6 py-2 rounded-md ${
+                            className={`px-6 py-2 border rounded-full transition duration-300 ${
                               yesNoAnswer === "no"
-                                ? "bg-red-500 text-white"
-                                : "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                                ? "bg-red-500 text-white border-red-500"
+                                : "border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
                             }`}
-                            onClick={() => setYesNoAnswer("no")}
+                            onClick={() => handleYesNoClick("no")}
                           >
                             No
                           </button>
@@ -497,122 +524,59 @@ function Surveys() {
 
                       {questionType === "smiley" && (
                         <div className="flex justify-center space-x-4">
-                          {[
-                            { emoji: "😞", value: "very_unhappy" },
-                            { emoji: "😐", value: "neutral" },
-                            { emoji: "😊", value: "happy" },
-                            { emoji: "😍", value: "very_happy" },
-                          ].map((smiley, index) => (
-                            <button
+                          {["😞", "😐", "😊", "😍"].map((smiley, index) => (
+                            <span
                               key={index}
-                              className={`text-3xl hover:scale-125 transition-transform ${
-                                selectedSmiley === smiley.value
-                                  ? "scale-125"
-                                  : ""
+                              className={`text-3xl cursor-pointer transition-transform ${
+                                selectedSmiley === smiley
+                                  ? "scale-125 text-yellow-400"
+                                  : "hover:scale-110"
                               }`}
-                              onClick={() => setSelectedSmiley(smiley.value)}
+                              onClick={() => handleSmileyClick(smiley)}
                             >
-                              {smiley.emoji}
-                            </button>
+                              {smiley}
+                            </span>
                           ))}
                         </div>
                       )}
-                    </div>
-                  )}
 
-                  {/* Existing Questions Preview */}
-                  {formData.questions.length > 0 && (
-                    <div className="space-y-4">
-                      {formData.questions.map((question, qIndex) => (
-                        <div
-                          key={qIndex}
-                          className="border border-gray-200 dark:border-gray-700 rounded-md p-4 bg-white dark:bg-gray-800 text-center"
-                        >
-                          <h3 className="font-medium mb-4">
-                            {question.text}{" "}
-                            {question.required && (
-                              <span className="text-red-500">*</span>
-                            )}
-                          </h3>
-
-                          {question.type === "text" && (
-                            <input
-                              type="text"
-                              className="w-3/4 mx-auto border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800"
-                              placeholder="Your answer"
-                            />
-                          )}
-
-                          {question.type === "rating" && (
-                            <div className="flex justify-center space-x-2">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <button
-                                  key={star}
-                                  className="text-3xl text-gray-400 hover:text-yellow-400"
-                                >
-                                  ★
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          {question.type === "yes_no" && (
-                            <div className="flex justify-center space-x-4">
-                              <button className="px-6 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md hover:bg-green-200 dark:hover:bg-green-800">
-                                Yes
-                              </button>
-                              <button className="px-6 py-2 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-md hover:bg-red-200 dark:hover:bg-red-800">
-                                No
-                              </button>
-                            </div>
-                          )}
-
-                          {question.type === "smiley" && (
-                            <div className="flex justify-center space-x-4">
-                              {["😞", "😐", "😊", "😍"].map((smiley, index) => (
-                                <button
-                                  key={index}
-                                  className="text-3xl hover:scale-125 transition-transform"
-                                >
-                                  {smiley}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          {question.type === "multiple_choice" &&
-                            question.options.length > 0 && (
-                              <div className="space-y-2 w-3/4 mx-auto">
-                                {question.options.map((option, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-center justify-start"
-                                  >
-                                    <input
-                                      type="radio"
-                                      id={`existing-option-${index}`}
-                                      name={`existing-options-${qIndex}`}
-                                      className="mr-2"
-                                    />
-                                    <label htmlFor={`existing-option-${index}`}>
-                                      {option}
-                                    </label>
-                                  </div>
-                                ))}
+                      {questionType === "multiple_choice" && (
+                        <div className="space-y-2 w-3/4 mx-auto">
+                          {options
+                            .filter((opt) => opt)
+                            .map((option, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-start"
+                              >
+                                <input
+                                  type="radio"
+                                  id={`preview-option-${index}`}
+                                  name="preview-options"
+                                  className="mr-2"
+                                  checked={selectedOptions[0] === index}
+                                  onChange={() => handleOptionSelect(0, index)}
+                                />
+                                <label htmlFor={`preview-option-${index}`}>
+                                  {option}
+                                </label>
                               </div>
-                            )}
+                            ))}
                         </div>
-                      ))}
+                      )}
                     </div>
-                  )}
+                  </div>
 
-                  {/* Submit Button */}
-                  <button
+                  {/* Submit Button - always visible but disabled when no questions */}
+                  <div
                     onClick={handleSubmitSurvey}
-                    className="w-1/2 mx-auto cursor-pointer bg-[#DA7B2C] text-white py-3 rounded-md hover:bg-[#DA7B2C] transition-colors duration-200 block"
+                    disabled={formData.questions.length === 0}
+                    className="flex justify-center"
                   >
-                    Submit Survey
-                  </button>
+                    <button className="bg-[#DA7B2C] text-white px-6 py-2 rounded-md hover:bg-[#DA7B2C]/90 transition-colors duration-200 w-40">
+                      Submit
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -691,15 +655,42 @@ function Surveys() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center justify-end space-x-4">
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={survey.active}
-                              onChange={() => toggleSurveyStatus(survey.id)}
-                              className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
-                          </label>
+                          <div className="ml-2">
+                            {" "}
+                            {/* Example: move it down and to the right */}
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={survey.active}
+                                onChange={() => toggleSurveyStatus(survey.id)}
+                                className="hidden"
+                              />
+                              <div className="relative w-12 h-4 overflow-visible">
+                                {/* Track background */}
+                                <div
+                                  className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                                    survey.active
+                                      ? "bg-primary/20"
+                                      : "bg-gray-400 dark:bg-gray-700"
+                                  }`}
+                                ></div>
+
+                                {/* Thumb */}
+                                <div
+                                  className={`absolute -top-[5px] ${
+                                    survey.active
+                                      ? "left-[26px] bg-primary"
+                                      : "left-0 bg-gray-200 dark:bg-gray-400"
+                                  } w-7 h-7 rounded-full border ${
+                                    survey.active
+                                      ? "border-primary/50"
+                                      : "border-white"
+                                  } transform transition-all duration-200`}
+                                ></div>
+                              </div>
+                            </label>
+                          </div>
+
                           <button
                             onClick={() => handleEdit(survey.id)}
                             className="text-gray-500 hover:text-primary"
