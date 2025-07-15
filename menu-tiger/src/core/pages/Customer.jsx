@@ -10,7 +10,7 @@ import {
 
 function Customers() {
   return (
-    <div className="p-6 dark:text-gray-100 bg-gray-200 min-h-screen">
+    <div className="p-6 dark:text-gray-100 bg-gray-200 min-h-screen dark:bg-gray-900">
       {/* Header Section (unchanged) */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 bg-white dark:bg-gray-800 p-6 shadow-lg rounded-lg">
         <div className="flex flex-col">

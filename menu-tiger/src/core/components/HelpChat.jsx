@@ -453,18 +453,17 @@ const HelpChat = ({ darkMode, showHelpChat, setShowHelpChat }) => {
       )}
 
       {/* Toggle Button */}
-<button
-  onClick={toggleChat}
-  className="flex items-center space-x-2 bg-secondary hover:bg-primary text-white px-4 py-3 rounded-full shadow-lg transition-colors duration-200 cursor-pointer"
->
-  {showHelpChat ? (
-    <FaChevronDown className="text-lg" /> // When open
-  ) : (
-    <FaCommentDots className="text-lg" /> // When closed
-  )}
-  <span>{showHelpChat ? "Close" : "Need Help?"}</span>
-</button>
-
+      <button
+        onClick={toggleChat}
+        className="flex items-center space-x-2 bg-secondary hover:bg-primary text-white px-4 py-3 rounded-full shadow-lg transition-colors duration-200 cursor-pointer"
+      >
+        {showHelpChat ? (
+          <FaChevronDown className="text-lg" /> // When open
+        ) : (
+          <FaCommentDots className="text-lg" /> // When closed
+        )}
+        <span>{showHelpChat ? "Close" : "Need Help?"}</span>
+      </button>
     </div>
   );
 };
