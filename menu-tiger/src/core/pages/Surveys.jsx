@@ -13,6 +13,8 @@ import {
   FaTimes,
   FaHistory,
 } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Surveys() {
   // Main state variables
@@ -20,6 +22,8 @@ function Surveys() {
   const [editingId, setEditingId] = useState(null);
   const [openSurveyId, setOpenSurveyId] = useState(null);
   const [currentSection, setCurrentSection] = useState("survey");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [surveyToDelete, setSurveyToDelete] = useState(null);
   const [surveys, setSurveys] = useState([
     { id: 1, name: "Customer Satisfaction", active: true, questions: [] },
     { id: 2, name: "Product Feedback", active: false, questions: [] },
@@ -38,6 +42,7 @@ function Surveys() {
   const [questionText, setQuestionText] = useState("");
   const [questionType, setQuestionType] = useState("text");
   const [isQuestionRequired, setIsQuestionRequired] = useState(false);
+  const [showDeleteDropdown, setShowDeleteDropdown] = useState(null);
   const [options, setOptions] = useState([""]);
 
   // Preview state
@@ -67,22 +72,22 @@ function Surveys() {
 
   const handleSave = () => {
     if (!formData.name) {
-      alert("Please enter a survey name!");
+      toast.error("Please enter a survey name!");
       return;
     }
 
     if (editingId) {
-      // Update existing survey
       setSurveys(
         surveys.map((survey) => (survey.id === editingId ? formData : survey))
       );
+      toast.success("Survey updated successfully!");
     } else {
-      // Add new survey
       const newSurvey = {
         id: Date.now(),
         ...formData,
       };
       setSurveys([...surveys, newSurvey]);
+      toast.success("Survey created successfully!");
     }
 
     setIsAddingNew(false);
@@ -452,7 +457,7 @@ function Surveys() {
                   {/* Welcome message with adjusted spacing */}
                   <div className="space-y-4 text-center">
                     <h3 className="font-medium text-xl">Welcome</h3>
-                    <p className="text-sm text-gray-600 font-medium">
+                    <p className="text-sm text-gray-600 font-medium dark:text-gray-500">
                       {formData.welcomeNote || "Question *"}
                     </p>
                   </div>
@@ -668,7 +673,7 @@ function Surveys() {
                               <div className="relative w-12 h-4 overflow-visible">
                                 {/* Track background */}
                                 <div
-                                  className={`absolute inset-0 rounded-full transition-colors duration-200 ${
+                                  className={`absolute inset-0 rounded-full ${
                                     survey.active
                                       ? "bg-primary/20"
                                       : "bg-gray-400 dark:bg-gray-700"
@@ -685,7 +690,7 @@ function Surveys() {
                                     survey.active
                                       ? "border-primary/50"
                                       : "border-white"
-                                  } transform transition-all duration-200`}
+                                  } transform`}
                                 ></div>
                               </div>
                             </label>
@@ -699,7 +704,10 @@ function Surveys() {
                             <FaEdit className="text-primary" />
                           </button>
                           <button
-                            onClick={() => handleDelete(survey.id)}
+                            onClick={() => {
+                              setSurveyToDelete(survey.id);
+                              setShowDeleteModal(true);
+                            }}
                             className="text-gray-500 hover:text-red-500"
                             title="Delete"
                           >
@@ -718,10 +726,10 @@ function Surveys() {
                 <span className="text-sm text-gray-600 dark:text-gray-400 mr-4">
                   1–1 of 1
                 </span>
-                <button className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors duration-200">
+                <button className="text-gray-600 dark:text-gray-400 hover:text-primary ">
                   <FaChevronLeft />
                 </button>
-                <button className="ml-2 text-gray-600 dark:text-gray-400 hover:text-primary transition-colors duration-200">
+                <button className="ml-2 text-gray-600 dark:text-gray-400 hover:text-primary">
                   <FaChevronRight />
                 </button>
               </div>
@@ -729,6 +737,55 @@ function Surveys() {
           </>
         )}
       </div>
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-base font-semibold mb-2 dark:text-white">
+              Delete Survey
+            </h3>
+            <p className="text-sm mb-4 dark:text-gray-300 leading-relaxed">
+              Are you sure you want to delete this survey? This action cannot be
+              undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setSurveys(surveys.filter((s) => s.id !== surveyToDelete));
+                  setShowDeleteModal(false);
+                  toast.success("Survey deleted successfully");
+                }}
+                className="px-3 py-1.5 bg-red-600 text-sm text-white rounded-full hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{
+          background: "#0d9488",
+          color: "#f8fafc",
+          borderRadius: "8px",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+        }}
+        className="custom-toast-container" // Add this
+      />
     </div>
   );
 }

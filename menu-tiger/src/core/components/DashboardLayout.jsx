@@ -40,15 +40,12 @@ const SidebarItem = ({
   className,
 }) => (
   <div
-    onClick={() => {
-      onClick();
-      setActivePage(label); // Ensure activePage state updates
-    }}
+    onClick={onClick}
     className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-fifth hover:text-secondary dark:hover:bg-gray-700 rounded-md ${
       active ? "bg-fifth text-secondary font-medium dark:bg-gray-700" : ""
     } ${className || ""}`}
   >
-    <img src={icon} alt={label} className={`w-6 h-6 ${active ? "" : ""}`} />
+    <img src={icon} alt={label} className="w-5 h-5" />
     {!collapsed && <span>{label}</span>}
   </div>
 );
@@ -111,7 +108,9 @@ const Sidebar = ({
       <div>
         <div
           className={`flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-fifth dark:hover:bg-gray-700 rounded-md ${
-            openDropdown === "Store" ? "text-primary font-medium bg-fifth" : ""
+            openDropdown === "Store"
+              ? "text-primary font-medium bg-fifth dark:bg-gray-700"
+              : ""
           }`}
           onClick={() => toggleDropdown("Store")}
         >
@@ -163,7 +162,7 @@ const Sidebar = ({
         <div
           className={`flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-fifth dark:hover:bg-gray-700 rounded-md ${
             openDropdown === "Marketing"
-              ? "text-primary font-medium bg-fifth"
+              ? "text-primary font-medium bg-fifth dark:bg-gray-700"
               : ""
           }`}
           onClick={() => toggleDropdown("Marketing")}
