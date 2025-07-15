@@ -50,12 +50,26 @@ const Menu = () => {
   const [editingModifierId, setEditingModifierId] = useState(null);
   const [openModifierId, setOpenModifierId] = useState(null);
   const [currentSection, setCurrentSection] = useState("modifiers");
-  const [modifierOptions, setModifierOptions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteType, setDeleteType] = useState("");
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
   const [itemToDuplicate, setItemToDuplicate] = useState(null);
+  const [errors, setErrors] = useState({
+    modifierName: false,
+    modifierOptions: [],
+    showErrors: false,
+  });
+  const [modifierOptions, setModifierOptions] = useState([
+    { name: "", price: 0, unit: "gram" },
+  ]);
+
+  const addModifierOption = () => {
+    setModifierOptions([
+      ...modifierOptions,
+      { name: "", price: 0, unit: "gram" },
+    ]);
+  };
 
   const tabs = [
     { name: "Menus", icon: <FaListUl className="mr-2" /> },
@@ -335,11 +349,27 @@ const Menu = () => {
   };
 
   const handleSaveModifier = () => {
-    if (!modifierName) {
-      toast.error("Please enter a modifier name");
+    // Validate modifier name
+    const nameError = !modifierName.trim();
+
+    // Validate each modifier option name
+    const optionErrors = modifierOptions.map((option) => !option.name.trim());
+
+    // Check if any option is invalid
+    const hasOptionErrors = optionErrors.some((error) => error);
+
+    setErrors({
+      modifierName: nameError,
+      modifierOptions: optionErrors,
+    });
+
+    // If any validation fails, show error and return
+    if (nameError || hasOptionErrors) {
+      toast.error("Please fill all required fields");
       return;
     }
 
+    // Rest of your save logic...
     if (editingModifierId) {
       setModifiers(
         modifiers.map((modifier) =>
@@ -369,14 +399,17 @@ const Menu = () => {
     setEditingModifierId(null);
   };
 
-  const addModifierOption = () => {
-    setModifierOptions([...modifierOptions, { name: "", price: "", unit: "" }]);
-  };
-
   const updateModifierOption = (index, field, value) => {
     const updated = [...modifierOptions];
     updated[index][field] = value;
     setModifierOptions(updated);
+
+    // Clear error for this option if name is being updated
+    if (field === "name" && value.trim()) {
+      const newErrors = [...errors.modifierOptions];
+      newErrors[index] = false;
+      setErrors({ ...errors, modifierOptions: newErrors });
+    }
   };
 
   const deleteModifierOption = (index) => {
@@ -1055,128 +1088,218 @@ const Menu = () => {
 
                   {/* Modifiers Section */}
                   {currentSection === "modifiers" && (
-                    <div className="space-y-6 max-w-sm">
-                      {/* Modifier Group Name */}
+                    <div className="space-y-6 max-w-full sm:max-w-md">
+                      {/* Modifier Group Name - unchanged */}
                       <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800">
-                        <label className="w-28 text-sm font-medium text-gray-600 dark:text-gray-300 px-3 py-2">
+                        <label className="w-28 text-sm font-medium text-gray-600 dark:text-gray-300 px-3 py-2 cursor-pointer">
                           Name <span className="text-red-500">*</span>
                         </label>
                         <div className="border-l border-gray-300 dark:border-gray-600 flex-1 px-3 py-2">
                           <input
                             type="text"
                             value={modifierName}
-                            onChange={(e) => setModifierName(e.target.value)}
-                            className="w-full bg-transparent text-gray-700 dark:text-gray-100 focus:outline-none"
+                            onChange={(e) => {
+                              setModifierName(e.target.value);
+                              setErrors({
+                                ...errors,
+                                modifierName: !e.target.value.trim(),
+                              });
+                            }}
+                            className={`w-full bg-transparent text-gray-700 dark:text-gray-100 focus:outline-none cursor-pointer ${
+                              errors.modifierName ? "border-red-500" : ""
+                            }`}
+                            required
                           />
                         </div>
                       </div>
-
-                      {/* Type: Optional / Required */}
-                      <div className="space-y-1">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Type
+                      {errors.modifierName && (
+                        <p className="text-xs text-red-500 mt-1">
+                          Modifier name is required
                         </p>
-                        <div className="flex flex-col items-start border border-gray-300 dark:border-gray-600 rounded-sm py-6 px-4 gap-4 text-sm text-gray-700 dark:text-gray-300">
-                          <label className="flex items-center gap-2">
-                            <input
-                              type="radio"
-                              name="modifierType"
-                              value="optional"
-                              className="accent-primary"
-                              defaultChecked
-                            />
-                            Optional
-                          </label>
-                          <label className="flex items-center gap-2">
-                            <input
-                              type="radio"
-                              name="modifierType"
-                              value="required"
-                              className="accent-primary"
-                            />
-                            Required
-                          </label>
+                      )}
+
+                      {/* Type: Optional / Required - unchanged */}
+                      <div className="space-y-2">
+                        <div className="flex flex-row items-center gap-2">
+                          <p className="text-md text-gray-500 dark:text-gray-400">
+                            Type
+                          </p>
+                          <FaQuestionCircle className="text-primary text-lg cursor-pointer" />
+                        </div>
+                        <div className="flex flex-col items-start border border-gray-300 dark:border-gray-600 rounded-md py-6 px-4 gap-4 text-sm text-gray-700 dark:text-gray-300">
+                          <div className="flex flex-col gap-4">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                              <div className="relative w-5 h-5">
+                                <input
+                                  type="radio"
+                                  name="modifierType"
+                                  value="optional"
+                                  className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                  defaultChecked
+                                />
+                                <div className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-primary transition-colors"></div>
+                                <div className="absolute top-1/2 left-1/2 w-2.5 h-2.5 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2 scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
+                              </div>
+                              <span className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                                Optional
+                              </span>
+                            </label>
+                            <label className="flex items-center gap-3 cursor-pointer">
+                              <div className="relative w-5 h-5">
+                                <input
+                                  type="radio"
+                                  name="modifierType"
+                                  value="required"
+                                  className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                                <div className="w-5 h-5 rounded-full border-2 border-gray-300 peer-checked:border-primary transition-colors"></div>
+                                <div className="absolute top-1/2 left-1/2 w-2.5 h-2.5 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2 scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
+                              </div>
+                              <span className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+                                Required
+                              </span>
+                            </label>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Allow duplicate checkbox */}
+                      {/* Allow duplicate checkbox - unchanged */}
                       <div className="flex justify-between items-center border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-gray-700 dark:text-gray-300">
-                        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <label className="flex items-center gap-2 text-sm cursor-pointer">
                           <input
                             type="checkbox"
                             id="allow-duplicates"
-                            className="accent-primary w-5 h-5"
+                            className="accent-primary w-5 h-5 cursor-pointer"
                           />
                           Allow adding same choice multiple times
                         </label>
-                        <FaQuestionCircle className="text-primary text-xl" />
+                        <FaQuestionCircle className="text-primary text-xl cursor-pointer" />
+                      </div>
+                      <div className="flex flex-row items-center gap-2">
+                        <p className="text-md text-gray-500 dark:text-gray-400">
+                          Modifiers
+                        </p>
+                        <FaQuestionCircle className="text-primary text-lg cursor-pointer" />
                       </div>
 
-                      {/* Modifiers Input Section */}
-                      <div className="space-y-2">
-                        <div className="grid grid-cols-4 gap-4 text-sm font-semibold text-gray-600 dark:text-gray-300">
-                          <span>Name</span>
-                          <span>Price</span>
-                          <span>Unit</span>
-                          <span></span>
+                      {/* Responsive Modifiers Input Section */}
+                      <div className="space-y-1">
+                        <div className="hidden sm:grid grid-cols-12 gap-4 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                          <span className="col-span-5 cursor-pointer">
+                            Name
+                          </span>
+                          <span className="col-span-3 cursor-pointer">
+                            Price
+                          </span>
+                          <span className="col-span-3 cursor-pointer">
+                            Unit
+                          </span>
+                          <span className="col-span-1"></span>
                         </div>
 
                         {modifierOptions.map((option, index) => (
                           <div
                             key={index}
-                            className="grid grid-cols-4 gap-4 items-center"
+                            className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-start"
                           >
-                            <input
-                              type="text"
-                              className="px-2 py-2 rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 focus:outline-none"
-                              value={option.name}
-                              onChange={(e) =>
-                                updateModifierOption(
-                                  index,
-                                  "name",
-                                  e.target.value
-                                )
-                              }
-                            />
-                            <input
-                              type="number"
-                              className="px-2 py-2 rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 focus:outline-none"
-                              value={option.price}
-                              onChange={(e) =>
-                                updateModifierOption(
-                                  index,
-                                  "price",
-                                  e.target.value
-                                )
-                              }
-                            />
-                            <input
-                              type="text"
-                              className="px-2 py-2 rounded-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 focus:outline-none"
-                              value={option.unit}
-                              onChange={(e) =>
-                                updateModifierOption(
-                                  index,
-                                  "unit",
-                                  e.target.value
-                                )
-                              }
-                            />
-                            {modifierOptions.length > 1 && (
-                              <button
-                                onClick={() => deleteModifierOption(index)}
-                                className="text-red-500 hover:text-red-700 cursor-pointer"
-                              >
-                                <FaTrash />
-                              </button>
-                            )}
+                            {/* Name Field */}
+                            <div className="col-span-1 sm:col-span-5 min-h-[64px]">
+                              <div className="flex items-center sm:block">
+                                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 sm:hidden mr-2">
+                                  Name:
+                                </span>
+                                <div className="w-full">
+                                  <input
+                                    type="text"
+                                    className={`w-full px-2 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 focus:outline-none cursor-pointer ${
+                                      errors.modifierOptions[index]
+                                        ? "border-red-500"
+                                        : ""
+                                    }`}
+                                    value={option.name}
+                                    onChange={(e) =>
+                                      updateModifierOption(
+                                        index,
+                                        "name",
+                                        e.target.value
+                                      )
+                                    }
+                                    required
+                                  />
+                                  {errors.modifierOptions[index] && (
+                                    <p className="text-xs text-red-500 mt-1 whitespace-nowrap">
+                                      Name is required
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Price Field */}
+                            <div className="col-span-1 sm:col-span-3">
+                              <div className="flex items-center sm:block">
+                                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 sm:hidden mr-2">
+                                  Price:
+                                </span>
+                                <input
+                                  type="number"
+                                  className="w-full px-2 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 focus:outline-none cursor-pointer"
+                                  value={option.price}
+                                  defaultValue={0}
+                                  onChange={(e) =>
+                                    updateModifierOption(
+                                      index,
+                                      "price",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </div>
+                            </div>
+
+                            {/* Unit Field */}
+                            <div className="col-span-1 sm:col-span-3">
+                              <div className="flex items-center sm:block">
+                                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 sm:hidden mr-2">
+                                  Unit:
+                                </span>
+                                <input
+                                  type="text"
+                                  className="w-full px-2 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-100 focus:outline-none cursor-pointer"
+                                  value={option.unit}
+                                  defaultValue="gram"
+                                  onChange={(e) =>
+                                    updateModifierOption(
+                                      index,
+                                      "unit",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </div>
+                            </div>
+
+                            {/* Delete Button */}
+                            <div className="col-span-1 sm:col-span-1 flex justify-end sm:justify-start items-start">
+                              {modifierOptions.length > 1 && (
+                                <button
+                                  onClick={() => deleteModifierOption(index)}
+                                  className="text-gray-500 hover:text-gray-700 cursor-pointer w-full sm:w-auto flex justify-end sm:justify-start mt-[10px] sm:mt-0"
+                                >
+                                  <span className="sm:hidden mr-2 text-xs text-gray-500 dark:text-gray-400">
+                                    Action:
+                                  </span>
+                                  <FaTrash />
+                                </button>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
 
-                      {/* Add Modifier Option Button */}
+                      {/* Add Modifier Option Button - unchanged */}
                       <button
-                        className="mt-3 px-3 py-3 border cursor-pointer border-primary text-primary rounded-sm text-sm hover:bg-primary hover:text-white transition"
+                        className="mt-2 px-3 py-2 border border-primary text-primary rounded-md text-sm hover:bg-primary hover:text-white transition cursor-pointer"
                         onClick={addModifierOption}
                       >
                         + Add Modifier Option
