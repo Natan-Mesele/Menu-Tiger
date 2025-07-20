@@ -13,23 +13,24 @@ import {
   FaChevronLeft,
   FaTimes,
 } from "react-icons/fa";
-import Dashboard from "../pages/Dashboard";
-import Menu from "../pages/Menu";
-import Orders from "../pages/Orders";
-import Store from "../pages/Store";
-import Integration from "../pages/Integration";
-import Website from "../pages/Website";
-import Customer from "../pages/Customer";
-import FAQ from "../pages/FAQ";
-import Settings from "../pages/Settings";
-import Surveys from "../pages/Surveys";
-import Taxation from "../pages/Taxation";
-import Promotion from "../pages/Promotion";
-import HotActions from "../pages/HotActions";
-import Reports from "../pages/Reports";
+
+import Menu from "../pages/menu/Menu";
+import Integration from "../pages/integration/Integration";
+import Website from "../pages/website/Website";
+import Customer from "../pages/customer/Customer";
+import FAQ from "../pages/faq/FAQ";
+import Settings from "../pages/setting/Settings";
+import Surveys from "../pages/survey/Surveys";
+import Taxation from "../pages/taxation/Taxation";
+import Promotion from "../pages/promotion/Promotion";
+import HotActions from "../pages/HotActions/HotActions";
+import Reports from "../pages/report/Reports";
 import logo from "../../assets/img/download.png";
 import { TbLanguage } from "react-icons/tb";
 import HelpChat from "./HelpChat";
+import Dashboard from "../pages/dashboard/Dashboard";
+import Orders from "../pages/order/Orders";
+import Store from "../pages/stores/Store";
 
 const SidebarItem = ({
   icon,
