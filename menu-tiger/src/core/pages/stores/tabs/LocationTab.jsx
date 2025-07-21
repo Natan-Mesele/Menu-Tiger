@@ -40,20 +40,22 @@ function LocationTab() {
   return (
     <div>
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-col md:flex-row justify-between gap-4 md:gap-6 items-start md:items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full">
-          <div className="inline-flex items-center text-gray-900 dark:text-gray-100 text-md bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-md shadow-md select-none border border-gray-300 dark:border-gray-600 whitespace-nowrap">
-            <span>Location Details</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 border border-primary dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 w-full md:w-auto">
-            <FaQuestionCircle className="text-primary mt-0.5 text-lg" />
-            <span className="leading-snug">
+      <div className="flex flex-row justify-between gap-4 md:gap-6 items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex-shrink-0 flex items-center text-gray-900 dark:text-gray-100 text-md bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-md shadow-md select-none border border-gray-300 dark:border-gray-600 whitespace-nowrap">
+          <span>Location Details</span>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto">
+          <div className="flex items-center gap-2 px-3 py-2 border border-primary dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 w-fit">
+            <FaQuestionCircle className="text-primary mt-0.5 text-lg flex-shrink-0" />
+            <span className="hidden sm:inline leading-snug">
               Add store location details to identify customer orders which are
               inside the store radius area
             </span>
           </div>
         </div>
-        <SaveButton onClick={handleSaveLocation} />
+        <div className="w-full md:w-auto flex justify-end">
+          <SaveButton onClick={handleSaveLocation} />
+        </div>
       </div>
 
       {/* Location Toggle */}

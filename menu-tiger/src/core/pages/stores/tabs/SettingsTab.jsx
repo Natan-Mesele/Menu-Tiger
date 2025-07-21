@@ -35,17 +35,19 @@ function SettingsTab() {
   return (
     <div>
       {/* Settings Header Section */}
-      <div className="flex flex-col sm:flex-col md:flex-row justify-between gap-4 md:gap-6 items-start md:items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full">
-          <div className="text-gray-900 dark:text-gray-100 text-md bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-md shadow-md select-none w-full md:w-auto">
-            <span>Settings</span>
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 mb-4 sm:mb-6 pb-4 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+        <div className="flex flex-row items-center gap-2 sm:gap-3 min-w-0 flex-nowrap whitespace-nowrap">
+          <div className="text-gray-900 dark:text-gray-100 text-md bg-gray-200 dark:bg-gray-700 px-3 py-3 rounded-md shadow-md select-none w-full md:w-auto">
+            <span className="whitespace-nowrap">Settings</span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-2 border border-primary dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 w-full md:w-auto">
-            <FaQuestionCircle className="text-primary mt-0.5" />
-            <span className="leading-snug">Manage your store settings</span>
+          <div className="flex items-center gap-2 px-3 py-3 border border-primary dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 w-full md:w-auto">
+            <FaQuestionCircle className="text-primary mt-0.5 flex-shrink-0" />
+            <span className="leading-snug whitespace-nowrap">
+              Manage your store settings
+            </span>
           </div>
         </div>
-        <SaveButton onClick={handleSaveSettings} />
+        <SaveButton onClick={handleSaveSettings} className="flex-shrink-0" />
       </div>
 
       {/* Settings Content */}

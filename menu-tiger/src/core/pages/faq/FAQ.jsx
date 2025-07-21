@@ -56,11 +56,7 @@ function Faq() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-20">
             {/* Light mode logo (shown only in light mode) */}
-            <img
-              src={logo}
-              alt="Logo"
-              className="h-10 ml-4 hidden md:block dark:hidden"
-            />
+            <img src={logo} alt="Logo" className="h-10 ml-4 dark:hidden" />
 
             {/* Dark mode logo (shown only in dark mode) */}
             <img

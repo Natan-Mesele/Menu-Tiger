@@ -118,7 +118,7 @@ function QRTab() {
       <div className="max-w-4xl mx-auto mt-2">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* Customization Options */}
-          <div className="p-6 md:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+          <div className="w-full p-4 sm:p-6 md:w-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
             <div className="space-y-3">
               {designTabs.map((tab) => (
                 <div key={tab.id} className="transition-all">
@@ -185,7 +185,7 @@ function QRTab() {
           </div>
 
           {/* QR Preview */}
-          <div className="p-6 md:w-1/2 sticky top-4">
+          <div className="w-full p-4 sm:p-6 md:w-1/2 sticky top-4">
             {" "}
             {/* Added sticky positioning here */}
             <QRPreviewSection

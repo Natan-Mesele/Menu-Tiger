@@ -54,8 +54,8 @@ function NotificationTab() {
                 Manage your notifications sounds
               </span>
             </div>
+            <SaveButton onClick={handleSave} />
           </div>
-          <SaveButton onClick={handleSave} />
         </div>
       </div>
 

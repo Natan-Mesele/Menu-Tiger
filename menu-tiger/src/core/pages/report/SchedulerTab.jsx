@@ -137,8 +137,10 @@ function SchedulerTab() {
     <div className="space-y-6">
       {!addingNew ? (
         <>
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div className="flex gap-4">
+          <div className="flex lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div className="flex xs:flex-row gap-4">
+              {" "}
+              {/* Changed to flex-col on mobile */}
               <AddNewButton
                 onClick={() => {
                   setFormData({
@@ -160,7 +162,7 @@ function SchedulerTab() {
               placeholder="Search modifiers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:w-64"
+              className="w-full max-w-[130px] sm:w-64"
             />
           </div>
 

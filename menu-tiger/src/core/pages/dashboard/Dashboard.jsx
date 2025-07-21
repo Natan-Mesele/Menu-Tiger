@@ -153,7 +153,7 @@ const Dashboard = () => {
           <div className="relative flex-1 min-w-[180px]">
             <button
               onClick={() => setShowDatePicker(!showDatePicker)}
-              className="w-full py-4 px-6 rounded-md font-semibold bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-none cursor-pointer text-left whitespace-nowrap"
+              className="w-full py-4 px-6 rounded-md font-semibold bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-none cursor-pointer text-left whitespace-nowrap overflow-hidden text-ellipsis"
             >
               {startDate && endDate
                 ? `${format(startDate, "MM/dd/yyyy")} - ${format(

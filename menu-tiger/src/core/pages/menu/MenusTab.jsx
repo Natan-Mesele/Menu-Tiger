@@ -482,17 +482,18 @@ const MenusTab = () => {
     <>
       {showMainContent && (
         <div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 gap-4">
+          <div className="flex flex-row items-center gap-2 sm:gap-4 mb-4 sm:mb-6 overflow-x-auto">
             <AddNewButton
               onClick={handleAddNewClick}
-              className="text-sm py-3"
+              className="text-sm py-3 flex-shrink-0"
             />
-            <div className="flex items-center border border-primary px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 text-sm">
-              <FaQuestionCircle className="mr-2 text-primary text-sm" />
-              Go to Store setting to connect your favorite menu
+            <div className="flex items-center border border-primary px-2 sm:px-4 py-3 sm:py-3 rounded-md text-gray-700 dark:text-gray-300 text-xs sm:text-sm min-w-0">
+              <FaQuestionCircle className="mr-2 text-primary text-xs flex-shrink-0" />
+              <span className="whitespace-normal">
+                Go to Store setting to connect your favorite menu
+              </span>
             </div>
           </div>
-
           {menus.length > 0 ? (
             <div className="space-y-4">
               {menus.map((menu) => (

@@ -7,7 +7,7 @@ function FeedbackTab() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="flex sm:flex-row justify-between items-center gap-4">
         <button className="flex items-center border border-primary dark:border-gray-600 text-primary dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
           <FaDownload className="mr-2 text-primary" />
           Download CSV
@@ -16,7 +16,7 @@ function FeedbackTab() {
           placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full sm:w-64"
+          className="w-full max-w-[180px] sm:w-64"
         />
       </div>
 

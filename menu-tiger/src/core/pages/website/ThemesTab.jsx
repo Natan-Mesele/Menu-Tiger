@@ -35,9 +35,9 @@ function ThemesTab({ selectedTheme, setSelectedTheme, handleSave }) {
       {/* Toast container for notifications */}
       <ToastProvider />
       {/* Top section with "Themes" text and Save button */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4">
-        <div className="bg-gray-200 dark:bg-gray-700 px-4 py-3 rounded-md shadow-md w-full sm:w-auto">
-          <span className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">
+      <div className="flex sm:flex-row justify-between items-start sm:items-center gap-4 pb-4">
+        <div className="bg-gray-200 dark:bg-gray-700 px-4 py-3 rounded-md shadow-md">
+          <span className="text-sm text-gray-700 dark:text-gray-300 sm:text-base">
             Themes
           </span>
         </div>

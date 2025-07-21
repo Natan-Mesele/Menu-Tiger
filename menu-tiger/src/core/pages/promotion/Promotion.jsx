@@ -12,6 +12,7 @@ import {
   FaCalendarAlt,
   FaClock,
   FaChevronDown,
+  FaLanguage,
 } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -258,30 +259,32 @@ function Promotion() {
             {/* Tabs */}
             <div className="flex border-b border-gray-300 dark:border-gray-600 mb-6">
               <button
-                className={`px-4 py-2 font-medium cursor-pointer ${
+                className={`px-5 py-3 font-medium cursor-pointer flex items-center ${
                   currentTab === "promotion"
                     ? "border-b-2 border-primary text-primary"
                     : "text-gray-600 dark:text-gray-300"
                 }`}
                 onClick={() => setCurrentTab("promotion")}
               >
-                Promotion
+                <FaBullhorn className="mr-3 text-lg" />{" "}
+                <span className="text-md">Promotion</span>{" "}
               </button>
               <button
-                className={`px-4 py-2 font-medium cursor-pointer ${
+                className={`px-5 py-3 font-medium cursor-pointer flex items-center ${
                   currentTab === "localize"
                     ? "border-b-2 border-primary text-primary"
                     : "text-gray-600 dark:text-gray-300"
                 }`}
                 onClick={() => setCurrentTab("localize")}
               >
-                Localize
+                <FaLanguage className="mr-3 text-lg" />{" "}
+                <span className="text-md">Localize</span>{" "}
               </button>
             </div>
 
             {/* Tab Content */}
             {currentTab === "promotion" ? (
-              <div className="max-w-2xl mx-auto space-y-6">
+              <div className="max-w-lg space-y-6">
                 {/* Info box with ? icon */}
                 <div className="border border-primary rounded-lg p-4 mb-6">
                   <div className="flex items-start">
@@ -294,7 +297,7 @@ function Promotion() {
                 </div>
 
                 {/* Promotion form fields - all moved to left side */}
-                <div className="space-y-4 max-w-2xl">
+                <div className="space-y-4 max-w-lg">
                   {/* Promotion type */}
                   <div className="relative w-full" ref={dropdownRef}>
                     <div

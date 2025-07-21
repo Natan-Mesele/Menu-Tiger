@@ -1,8 +1,3 @@
-/*
-  Dependency: Install react-beautiful-dnd
-  Run: npm install react-beautiful-dnd
-  or: yarn add react-beautiful-dnd
-*/
 import React, { useState } from "react";
 import {
   FaRocket,
@@ -13,6 +8,8 @@ import {
   FaTrash,
   FaPlus,
   FaTimes,
+  FaClipboardList,
+  FaLanguage,
 } from "react-icons/fa";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { ToastContainer, toast } from "react-toastify";
@@ -340,7 +337,7 @@ function Surveys() {
         {isAddingNew ? (
           <>
             {/* Back arrow and breadcrumb */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="flex sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div className="flex items-center space-x-3">
                 <BackButton onClick={handleBackClick} />
                 <div className="text-gray-900 dark:text-gray-100 text-sm bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-md select-none">
@@ -357,23 +354,25 @@ function Surveys() {
             {/* Tabs */}
             <div className="flex border-b border-gray-300 dark:border-gray-600 mb-6">
               <button
-                className={`px-4 py-2 text-sm sm:text-base font-medium cursor-pointer ${
+                className={`px-4 py-2 text-base sm:text-lg font-medium cursor-pointer flex items-center ${
                   currentSection === "survey"
                     ? "border-b-2 border-primary text-primary"
                     : "text-gray-600 dark:text-gray-300"
                 }`}
                 onClick={() => setCurrentSection("survey")}
               >
+                <FaClipboardList className="mr-2 text-lg sm:text-xl" />
                 Survey
               </button>
               <button
-                className={`px-4 py-2 text-sm sm:text-base font-medium cursor-pointer ${
+                className={`px-4 py-2 text-base sm:text-lg font-medium cursor-pointer flex items-center ${
                   currentSection === "localize"
                     ? "border-b-2 border-primary text-primary"
                     : "text-gray-600 dark:text-gray-300"
                 }`}
                 onClick={() => setCurrentSection("localize")}
               >
+                <FaLanguage className="mr-2 text-lg sm:text-xl" />
                 Localize
               </button>
             </div>

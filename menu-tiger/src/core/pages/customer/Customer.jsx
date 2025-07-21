@@ -32,9 +32,9 @@ function Customers() {
       {/* Main Content */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
         {/* Search Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          {/* Left: Info with hover arrow */}
-          <div className="flex items-center group">
+        <div className="flex md:flex-row justify-between items-start md:items-center gap-2 mb-6">
+          {/* Left: Info with hover arrow (unchanged) */}
+          <div className="flex items-center group flex-1">
             <div className="flex items-center text-gray-700 dark:text-gray-300 text-sm border border-primary dark:border-gray-500 rounded-md px-3 py-3 group-hover:pr-2 transition-all duration-200">
               <FaQuestionCircle className="text-primary mr-2" />
               Manage your customers
@@ -45,14 +45,15 @@ function Customers() {
             </div>
           </div>
 
-          {/* Right: Search */}
-
-          <SearchInput
-            placeholder="Search"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-64"
-          />
+          {/* Right: Search - now properly right-aligned */}
+          <div className="flex justify-end">
+            <SearchInput
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full md:w-[200px]"
+            />
+          </div>
         </div>
 
         {/* Table Section */}

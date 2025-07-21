@@ -16,7 +16,6 @@ import ColorSelection from "../components/ColorSelection";
 import FrameSelection from "../components/FrameSelection";
 import AddNewButton from "../../../commons/AddNewButton";
 import { toast } from "react-toastify";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BackButton from "../../../commons/BackButton";
 import SaveButton from "../../../commons/SaveButton";
@@ -27,7 +26,10 @@ function TablesTab({
   setSavedSchedulers,
   setItemToDelete,
   setDeleteType,
+  showDeletePopup,
   setShowDeletePopup,
+  itemToDelete,
+  deleteType,
 }) {
   const [showTableForm, setShowTableForm] = useState(false);
   const [showQRCustomization, setShowQRCustomization] = useState(false);
@@ -41,6 +43,18 @@ function TablesTab({
   const [selectedColor, setSelectedColor] = useState("#3B82F6");
   const [selectedFrame, setSelectedFrame] = useState(null);
   const [activeDesignTab, setActiveDesignTab] = useState(null);
+
+  const toastOptions = {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: false,
+    newestOnTop: false,
+    closeOnClick: true,
+    rtl: false,
+    pauseOnFocusLoss: true,
+    draggable: true,
+    pauseOnHover: true,
+  };
 
   const designTabs = [
     {
@@ -98,15 +112,7 @@ function TablesTab({
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      toast.error("Please enter a valid name!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error("Please enter a valid name!", toastOptions);
       return;
     }
 
@@ -118,30 +124,14 @@ function TablesTab({
             : item
         )
       );
-      toast.success("Scheduler updated successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.success("Scheduler updated successfully!", toastOptions);
     } else {
       const newItem = {
         id: Date.now(),
         name: formData.name.trim(),
       };
       setSavedSchedulers([...savedSchedulers, newItem]);
-      toast.success("Scheduler added successfully!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.success("Scheduler added successfully!", toastOptions);
     }
 
     setShowTableForm(false);
@@ -164,14 +154,31 @@ function TablesTab({
     }
   };
 
+  const handleDeleteConfirm = () => {
+    setSavedSchedulers(
+      savedSchedulers.filter((item) => item.id !== itemToDelete)
+    );
+    setShowDeletePopup(false);
+    setItemToDelete(null);
+    setDeleteType("");
+    toast.success("Scheduler deleted successfully!", toastOptions);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeletePopup(false);
+    setItemToDelete(null);
+    setDeleteType("");
+  };
+
   return (
     <div className="max-w-full">
+      <ToastProvider />
       {showTableForm ? (
         <div>
-          <div className="flex flex-col sm:flex-row flex-wrap justify-between items-center mb-4 sm:mb-6 pb-4 border-b border-gray-200 dark:border-gray-700 w-full overflow-x-auto gap-2 sm:gap-4">
-            <div className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-3 mb-2 sm:mb-0">
+          <div className="flex flex-row items-center justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-700 w-full gap-2">
+            <div className="flex flex-row items-center gap-2">
               <BackButton onClick={() => setShowTableForm(false)} />
-              <div className="text-gray-900 dark:text-gray-100 text-sm sm:text-md bg-gray-100 dark:bg-gray-700 px-3 sm:px-4 py-2 rounded-md select-none">
+              <div className="text-gray-900 dark:text-gray-100 text-sm bg-gray-100 dark:bg-gray-700 px-3 py-3 rounded-md select-none whitespace-nowrap">
                 <span>Scheduler</span> <span className="text-gray-400">/</span>{" "}
                 <span className="text-primary">
                   {formData.id ? "Edit scheduler" : "Add scheduler"}
@@ -204,19 +211,24 @@ function TablesTab({
         </div>
       ) : showQRCustomization ? (
         <div>
-          <div className="flex flex-col sm:flex-row flex-wrap justify-between items-center gap-2 mb-4 sm:mb-6 pb-4 border-b border-gray-200 dark:border-gray-700 w-full overflow-x-auto">
-            <div className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-2 mb-2 sm:mb-0 gap-2 sm:gap-4">
-              <BackButton onClick={() => setShowQRCustomization(false)} />
-              <div className="text-gray-900 dark:text-gray-100 text-sm sm:text-md bg-gray-100 dark:bg-gray-700 px-3 sm:px-4 py-2 rounded-md select-none">
+          <div className="flex flex-row flex-nowrap justify-end sm:justify-between items-center mb-4 sm:mb-6 pb-4 border-b border-gray-200 dark:border-gray-700 w-full overflow-x-auto gap-2 sm:gap-4">
+            <div className="flex flex-row flex-nowrap items-center gap-2 sm:gap-4 min-w-0 flex-1">
+              <BackButton
+                className="flex-shrink-0"
+                onClick={() => setShowQRCustomization(false)}
+              />
+              <div className="text-gray-900 dark:text-gray-100 text-sm sm:text-md bg-gray-100 dark:bg-gray-700 px-3 sm:px-4 py-3 rounded-md select-none whitespace-nowrap min-w-0 overflow-hidden text-ellipsis">
                 <span>Tables </span> <span className="text-gray-400">/</span>{" "}
                 <span className="text-primary">Customize QR code</span>
               </div>
-              <div className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-primary dark:border-primary rounded-md text-sm text-gray-700 dark:text-gray-300 truncate max-w-[200px] sm:max-w-none">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-3 border border-primary dark:border-primary rounded-md text-sm text-gray-700 dark:text-gray-300 min-w-0 flex-1 overflow-hidden">
                 <FaQuestionCircle className="text-primary flex-shrink-0" />
-                <span>Customize your QR code for store tables</span>
+                <span className="truncate min-w-0">
+                  Customize your QR code for store tables
+                </span>
               </div>
             </div>
-            <div className="min-w-fit">
+            <div className="flex-shrink-0">
               <SaveButton
                 onClick={() => {
                   const qrSettings = {
@@ -227,7 +239,10 @@ function TablesTab({
                     frame: selectedFrame,
                   };
                   console.log("QR Settings Saved:", qrSettings);
-                  toast.success("QR settings saved successfully!");
+                  toast.success(
+                    "QR settings saved successfully!",
+                    toastOptions
+                  );
                 }}
               />
             </div>
@@ -318,8 +333,8 @@ function TablesTab({
         </div>
       ) : (
         <>
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 border-b border-gray-200 pb-4">
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4 sm:mb-0">
+          <div className="flex flex-row justify-between items-center mb-4 sm:mb-6 border-b border-gray-200 pb-4">
+            <div className="flex flex-row gap-2 sm:gap-4">
               <AddNewButton
                 onClick={() => {
                   setFormData({ name: "", id: null });
@@ -348,7 +363,7 @@ function TablesTab({
                   key={item.id}
                   className="p-3 sm:p-4 border border-gray-200 dark:border-gray-700 rounded-md flex flex-col sm:flex-row justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <span className="font-medium text-sm sm:text-base">
+                  <span className="font-normal text-sm sm:text-base">
                     {item.name}
                   </span>
                   <div className="flex space-x-4 sm:space-x-6 mt-2 sm:mt-0">
@@ -384,7 +399,13 @@ function TablesTab({
           )}
         </>
       )}
-      <ToastProvider />
+      {showDeletePopup && (
+        <DeleteModal
+          deleteType={deleteType}
+          onCancel={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+        />
+      )}
     </div>
   );
 }

@@ -308,10 +308,13 @@ function CreateHotActions() {
       ) : (
         <div className="space-y-6">
           {/* Top Controls */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-grow">
-              {/* "Add New" Button */}
-              <div ref={containerRef} className="relative inline-block">
+          <div className="flex lg:flex-row lg:items-center lg:justify-between gap-4 max-[639px]:flex-row max-[639px]:flex-wrap max-[639px]:gap-2 max-[639px]:overflow-x-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 max-[639px]:flex-row max-[639px]:flex-wrap max-[639px]:gap-2 flex-grow w-full">
+              {/* "Add New" Button - unchanged */}
+              <div
+                ref={containerRef}
+                className="relative inline-block flex-shrink-0"
+              >
                 <button
                   ref={addNewRef}
                   onMouseEnter={() => {
@@ -324,10 +327,10 @@ function CreateHotActions() {
                     }, 300);
                     setPopupTimeout(timer);
                   }}
-                  className="flex items-center bg-gray-300 text-gray-600 px-4 py-3 rounded-md text-sm"
+                  className="flex items-center bg-gray-300 text-gray-600 px-4 py-3 max-[639px]:px-3 max-[639px]:py-2 rounded-md text-sm max-[639px]:text-xs whitespace-nowrap"
                 >
-                  <FaPlus className="mr-2" /> Add New{" "}
-                  <FaLock className="ml-2 text-sm" />
+                  <FaPlus className="mr-2 max-[639px]:text-xs" /> Add New{" "}
+                  <FaLock className="ml-2 text-sm max-[639px]:text-xs" />
                 </button>
 
                 {showWifiPopup && (
@@ -339,11 +342,12 @@ function CreateHotActions() {
                         window.scrollY +
                         5
                       }px`,
-                      left: `${
+                      left: `max(10px, min(85vw - 500px, ${
                         addNewRef.current?.getBoundingClientRect().left +
                         window.scrollX
-                      }px`,
-                      width: "500px",
+                      }px))`,
+                      width: "min(500px, 85vw)",
+                      maxWidth: "95vw",
                       zIndex: 50,
                     }}
                     onMouseEnter={() => {
@@ -356,9 +360,9 @@ function CreateHotActions() {
                     }}
                     className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
                   >
-                    <div className="text-sm text-gray-700 dark:text-gray-300 text-left">
+                    <div className="text-sm max-[639px]:text-xs text-gray-700 dark:text-gray-300 text-left">
                       <div className="flex items-start justify-start mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                        <h3 className="text-lg max-[639px]:text-base font-semibold text-gray-800 dark:text-white">
                           Access Denied
                         </h3>
                       </div>
@@ -369,13 +373,13 @@ function CreateHotActions() {
                         adjust your plan to gain access.
                       </p>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <button className="w-full border border-primary text-primary dark:border dark:hover:border-secondary px-5 py-2 rounded-sm hover:bg-primary-dark text-base shadow-md">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button className="w-full border border-primary text-primary dark:border dark:hover:border-secondary px-5 py-2 rounded-sm hover:bg-primary-dark text-base max-[639px]:text-xs shadow-md whitespace-nowrap">
                           Compare Plans
                         </button>
                         <button
                           onClick={() => setShowWifiPopup(false)}
-                          className="w-full bg-secondary text-white shadow-md dark:text-white px-5 py-2 rounded-sm hover:bg-primary text-base"
+                          className="w-full bg-secondary text-white shadow-md dark:text-white px-5 py-2 rounded-sm hover:bg-primary text-base max-[639px]:text-xs whitespace-nowrap"
                         >
                           Upgrade Your Plan
                         </button>
@@ -385,20 +389,22 @@ function CreateHotActions() {
                 )}
               </div>
 
-              <div className="flex items-center gap-2 px-4 py-3 max-w-xl border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300">
-                <FaQuestionCircle className="text-primary" />
-                <span>
+              {/* Info box - made responsive */}
+              <div className="flex items-center gap-2 px-4 py-3 max-[639px]:px-3 max-[639px]:py-2 w-full sm:max-w-xl border border-gray-300 dark:border-gray-600 rounded-md text-sm max-[639px]:text-xs text-gray-700 dark:text-gray-300">
+                <FaQuestionCircle className="text-primary flex-shrink-0 max-[639px]:text-xs" />
+                <span className="truncate sm:whitespace-normal max-[639px]:whitespace-normal">
                   Create hot actions your customers can request when ordering
                 </span>
                 <a
                   href="#!"
-                  className="ml-2 text-primary hover:underline whitespace-nowrap"
+                  className="ml-2 text-primary hover:underline whitespace-nowrap flex-shrink-0"
                 >
                   Read more
                 </a>
               </div>
             </div>
 
+            {/* Search - unchanged */}
             <div className="relative w-full sm:w-48">
               <SearchInput
                 placeholder="Search modifiers..."

@@ -246,8 +246,8 @@ function HoursTab() {
   return (
     <div>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 mb-4 sm:mb-6 pb-4 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+        <div className="flex flex-row items-center gap-2 sm:gap-3 min-w-0">
           <div className="text-gray-900 dark:text-gray-100 text-md bg-gray-200 dark:bg-gray-700 px-4 py-3 rounded-md shadow-md select-none">
             <span>Opening Hours</span>
           </div>

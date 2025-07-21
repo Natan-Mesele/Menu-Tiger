@@ -1,7 +1,7 @@
 import React from "react";
 import { FaTrash } from "react-icons/fa";
 
-function DeleteModal({ deleteType, onCancel, onConfirm }) {
+function DeleteModal({ deleteType = "item", onCancel, onConfirm }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-xs w-full text-left">

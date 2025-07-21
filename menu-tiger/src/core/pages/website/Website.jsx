@@ -51,18 +51,18 @@ function Website() {
       {/* Main Content */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         {/* Tabs Section */}
-        <div className="flex space-x-6 border-b border-gray-300 dark:border-gray-700 px-6 pt-6 bg-gray-50 dark:bg-gray-700 rounded-t-lg">
+        <div className="flex space-x-6 sm:space-x-6 border-b border-gray-300 dark:border-gray-700 px-2 sm:px-6 pt-6 bg-gray-50 dark:bg-gray-700 rounded-t-lg overflow-x-auto flex-nowrap">
           {tabs.map((tab) => (
             <button
               key={tab.value}
-              className={`relative pb-2 px-4 font-semibold flex items-center cursor-pointer ${
+              className={`relative pb-2 px-2 sm:px-4 font-semibold flex items-center cursor-pointer text-sm sm:text-base ${
                 activeTab === tab.value
                   ? "border-b-2 border-primary text-primary"
                   : "text-gray-700 dark:text-gray-300"
               }`}
               onClick={() => setActiveTab(tab.value)}
             >
-              <span className="mr-2 text-xl">{tab.icon}</span>
+              <span className="mr-2 text-lg sm:text-xl">{tab.icon}</span>
               {tab.name}
               {(tab.value === "colors" || tab.value === "themes") && (
                 <span className="ml-2 text-xs bg-yellow-300 text-black font-medium px-2 py-0.5 rounded-full">
