@@ -341,8 +341,21 @@ function Store() {
       {/* WiFi Access Denied Popup */}
       {showWifiPopup && wifiTabRef.current && (
         <div
-          className="z-50 bg-white dark:bg-gray-800 p-3 sm:p-6 rounded-md transition-opacity duration-200 shadow-xl" // Added shadow-xl here
-          style={popupStyle}
+          className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
+          style={{
+            position: "fixed",
+            top: `${
+              wifiTabRef.current?.getBoundingClientRect().bottom +
+              window.scrollY +
+              5
+            }px`,
+            left: `max(10px, min(85vw - 500px, ${
+              wifiTabRef.current?.getBoundingClientRect().left + window.scrollX
+            }px))`,
+            width: "min(500px, 85vw)",
+            maxWidth: "95vw",
+            zIndex: 50,
+          }}
           onMouseEnter={() => {
             setIsPopupHovered(true);
             if (popupTimeout) {
@@ -359,30 +372,34 @@ function Store() {
           }}
           role="tooltip"
         >
-          <div className="relative text-sm sm:text-base text-gray-700 dark:text-gray-300 text-left">
-            <h3 className="text-sm sm:text-lg font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
-              Access Denied
-            </h3>
-            <p className="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-sm max-[639px]:text-xs text-gray-700 dark:text-gray-300 text-left">
+            <div className="flex items-start justify-start mb-4">
+              <h3 className="text-lg max-[639px]:text-base font-semibold text-gray-800 dark:text-white">
+                Access Denied
+              </h3>
+            </div>
+
+            <p className="mb-4 text-gray-600 dark:text-gray-400">
               You do not have permission to use this feature due to limitations
               in your current plan. Please upgrade or adjust your plan to gain
               access.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button
                 onClick={() => {
                   setCurrentPage("settings");
                   setShowWifiPopup(false);
                 }}
-                className="w-full border border-primary text-primary px-2 sm:px-5 py-1 sm:py-2 text-xs sm:text-sm rounded-sm hover:bg-primary hover:text-white transition-colors"
+                className="w-full border border-primary text-primary dark:border dark:hover:border-secondary px-5 py-2 rounded-sm hover:bg-primary-dark text-base max-[639px]:text-xs shadow-md whitespace-nowrap"
               >
                 Compare Plans
               </button>
               <button
                 onClick={() => setShowWifiPopup(false)}
-                className="w-full bg-secondary dark:bg-gray-700 text-white dark:text-white px-2 sm:px-5 py-1 sm:py-2 text-xs sm:text-sm rounded-sm hover:bg-primary dark:hover:bg-gray-600 transition-colors"
+                className="w-full bg-secondary text-white shadow-md dark:text-white px-5 py-2 rounded-sm hover:bg-primary text-base max-[639px]:text-xs whitespace-nowrap"
               >
-                Upgrade Plan
+                Upgrade Your Plan
               </button>
             </div>
           </div>

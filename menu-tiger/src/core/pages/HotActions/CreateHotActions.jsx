@@ -12,7 +12,6 @@ import BackButton from "../../commons/BackButton";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import DeleteConfirmationModal from "../menu/components/DeleteConfirmationModal";
 import ToastProvider from "../../commons/ToastProvider";
 
 function CreateHotActions() {
@@ -153,6 +152,35 @@ function CreateHotActions() {
       setCallActions((prev) => prev.filter((action) => action.id !== id));
     }
   };
+
+  const DeleteConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+        <h3 className="text-base font-semibold mb-2 dark:text-white">
+          Confirm Deletion
+        </h3>
+        <p className="text-sm mb-4 dark:text-gray-300 leading-relaxed">
+          Are you sure you want to delete{" "}
+          {actionToDelete ? `"${actionToDelete.header}"` : "this"} action? This
+          action cannot be undone.
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={handleCancelDelete}
+            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirmDelete}
+            className="px-3 py-1.5 bg-red-600 text-sm text-white rounded-full hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -540,13 +568,7 @@ function CreateHotActions() {
         </div>
       )}
       <ToastProvider />
-      <DeleteConfirmationModal
-        show={showDeleteModal}
-        onCancel={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        itemName={actionToDelete?.header || ""}
-        itemType="action"
-      />
+      {showDeleteModal && <DeleteConfirmationModal />}
     </div>
   );
 }
