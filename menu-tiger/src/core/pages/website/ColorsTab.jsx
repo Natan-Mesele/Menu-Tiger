@@ -184,7 +184,7 @@ function ColorsTab({
             </h3>
             <div className="space-y-2">
               <span className="text-black block text-sm sm:text-base">
-                This is how the secondary color looks in a section.
+                This is how the secondary color looks in a sections.
               </span>
             </div>
           </div>
